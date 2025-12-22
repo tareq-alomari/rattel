@@ -1,0 +1,54 @@
+name: rattel
+description: "تطبيق رتّل - لحفظ ومراجعة القرآن الكريم"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  
+  # State Management & Routing
+  get: ^4.6.6
+  
+  # Local Database
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0
+  sqlite3_flutter_libs: ^0.5.15
+  path_provider: ^2.1.1
+  path: ^1.9.0
+  
+  # HTTP
+  http: ^1.1.0
+  
+  # Persistent Storage
+  shared_preferences: ^2.2.2
+  
+  # Internationalization & Formatting
+  intl: ^0.20.2
+  
+  # Fonts
+  google_fonts: ^6.1.0
+  
+  # Utilities
+  crypto: ^3.0.3
+  scrollable_positioned_list: ^0.3.8
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/data/
