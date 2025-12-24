@@ -64,4 +64,8 @@ class UserModel {
 
   bool get isStudent => role == 'student';
   bool get isTeacher => role == 'teacher';
+
+  // Compatibility getters
+  String get fullName => name;
+  String get username => email;
 }

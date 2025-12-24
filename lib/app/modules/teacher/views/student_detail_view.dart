@@ -58,12 +58,7 @@ class StudentDetailView extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {
                   if (student['user_id'] != null) {
-                    Get.toNamed(
-                      AppRoutes.evaluation.replaceFirst(
-                        ':id',
-                        '${student['user_id']}',
-                      ),
-                    );
+                    Get.toNamed('/evaluation/${student['user_id']}');
                   }
                 },
                 icon: const Icon(Icons.rate_review),

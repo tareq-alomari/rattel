@@ -8,6 +8,7 @@ import 'app/core/theme/app_theme.dart';
 import 'app/core/translations/app_translations.dart';
 import 'app/data/services/auth_service.dart';
 import 'app/data/services/badge_service.dart';
+import 'app/data/services/database_service.dart';
 import 'app/data/providers/database_helper.dart';
 import 'app/data/providers/quran_data_loader.dart';
 import 'app/routes/app_pages.dart';
@@ -38,6 +39,15 @@ void main() async {
 
   // Initialize badges
   await BadgeService.instance.initializeBadges();
+
+  // Seed initial data
+  print('🌱 Seeding initial data...');
+  try {
+    await DatabaseService.instance.seedDuas();
+    await DatabaseService.instance.seedTajweedData();
+  } catch (e) {
+    print('❌ Error seeding data: $e');
+  }
 
   // Initialize services
   await Get.putAsync(() => NotificationService().init());
@@ -70,7 +80,7 @@ class RattelApp extends StatelessWidget {
           : ThemeMode.light,
 
       // Localization
-      locale: Locale(Get.find<SettingsController>().settings.value.language),
+      locale: const Locale('ar', 'SA'), // Default to Arabic
       translations: AppTranslations(),
       fallbackLocale: const Locale('en', 'US'),
       localizationsDelegates: const [

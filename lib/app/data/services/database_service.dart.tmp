@@ -1,0 +1,26 @@
+import 'package:flutter/foundation.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:get/get.dart';
+import '../providers/database_helper.dart';
+import '../models/user_model.dart';
+import '../models/student_model.dart';
+import '../models/evaluation_model.dart';
+import '../models/dua_model.dart';
+
+class DatabaseService extends GetxService {
+  static DatabaseService get instance => Get.find<DatabaseService>();
+
+  /// Initialize the service
+  Future<DatabaseService> init() async {
+    await DatabaseHelper.instance.database;
+    return this;
+  }
+
+  // ... (Keeping existing methods placeholder for reference, but since I'm overwriting I need to be careful)
+  // WAIT - Overwriting the WHOLE file is risky if I don't have the full content.
+  // I should use replace_file_content or read it first.
+  // I read it earlier (Step 1904 view_code_item but that's partial).
+  // I should VIEW the file first to get the full content, then overwrite or replace.
+  
+  // Let's VIEW first.

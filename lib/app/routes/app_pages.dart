@@ -4,9 +4,10 @@ import '../modules/auth/views/splash_view.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
 import '../modules/auth/controllers/auth_controller.dart';
-import '../modules/student/views/student_home_view.dart';
+import '../modules/student/views/student_main_view.dart';
 import '../modules/student/controllers/student_controller.dart';
 import '../modules/teacher/views/teacher_home_view.dart';
+import '../modules/teacher/views/teacher_main_view.dart';
 import '../modules/teacher/controllers/teacher_controller.dart';
 import '../modules/quran/views/surah_selector_view.dart';
 import '../modules/quran/controllers/quran_controller.dart';
@@ -46,7 +47,7 @@ abstract class AppPages {
     ),
     GetPage(
       name: AppRoutes.studentHome,
-      page: () => const StudentHomeView(),
+      page: () => const StudentMainView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => StudentController());
       }),
@@ -54,7 +55,7 @@ abstract class AppPages {
     ),
     GetPage(
       name: AppRoutes.teacherHome,
-      page: () => const TeacherHomeView(),
+      page: () => const TeacherMainView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => TeacherController());
       }),

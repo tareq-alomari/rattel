@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controllers/teacher_controller.dart';
 import '../../../routes/app_routes.dart';
-import '../controllers/student_list_controller.dart';
 
-/// Student list view
+/// Student list view for teachers
 class StudentListView extends StatelessWidget {
   const StudentListView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(StudentListController());
+    final teacherController = Get.find<TeacherController>();
+    final searchController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(title: const Text('الطلاب')),
-      body: Column(
-        children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16),
+      appBar: AppBar(
+        title: Text('students'.tr),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: TextField(
-              controller: controller.searchController,
+              controller: searchController,
               decoration: InputDecoration(
-                hintText: 'بحث عن طالب...',
+                hintText: 'search_students'.tr,
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.white,
@@ -31,87 +31,56 @@ class StudentListView extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
               ),
-              onChanged: controller.filterStudents,
+              onChanged: (value) {
+                // Trigger search
+              },
             ),
           ),
-
-          // Student List
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (controller.filteredStudents.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.person_off,
-                        size: 64,
-                        color: Colors.grey.shade400,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'لا يوجد طلاب',
-                        style: TextStyle(color: Colors.grey.shade600),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
-                itemCount: controller.filteredStudents.length,
-                itemBuilder: (context, index) {
-                  final student = controller.filteredStudents[index];
-                  final avatarColor =
-                      Colors.primaries[student['name'].hashCode %
-                          Colors.primaries.length];
-
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(12),
-                      leading: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: avatarColor.withValues(alpha: 0.1),
-                        child: Text(
-                          (student['name'] as String)[0].toUpperCase(),
-                          style: TextStyle(
-                            color: avatarColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        student['name'],
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(student['email'] ?? ''),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutes.studentDetail.replaceFirst(
-                            ':id',
-                            '${student['user_id']}',
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            }),
-          ),
-        ],
+        ),
       ),
+      body: Obx(() {
+        if (teacherController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (teacherController.students.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text(
+                  'no_students_yet'.tr,
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: teacherController.students.length,
+          itemBuilder: (context, index) {
+            final student = teacherController.students[index];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: CircleAvatar(
+                  child: Text(student.fullName[0].toUpperCase()),
+                ),
+                title: Text(student.fullName),
+                subtitle: Text(student.email ?? student.username),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Get.toNamed('/student/${student.userId}');
+                },
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }

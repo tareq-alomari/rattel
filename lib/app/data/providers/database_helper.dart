@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 6,
+      version: 11,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -105,6 +105,131 @@ class DatabaseHelper {
         )
       ''');
     }
+
+    if (oldVersion < 7) {
+      debugPrint('➕ Adding translations and chapters_metadata tables...');
+
+      // Add transliteration column to quran table
+      try {
+        await db.execute('ALTER TABLE quran ADD COLUMN transliteration TEXT');
+      } catch (e) {
+        debugPrint('⚠️ transliteration column might already exist: $e');
+      }
+
+      // Create translations table
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS translations (
+          translation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verse_id INTEGER NOT NULL,
+          language_code TEXT NOT NULL,
+          text TEXT NOT NULL,
+          UNIQUE(verse_id, language_code),
+          FOREIGN KEY (verse_id) REFERENCES quran(ayah_id)
+        )
+      ''');
+
+      // Create chapters_metadata table
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS chapters_metadata (
+          chapter_id INTEGER PRIMARY KEY,
+          name_arabic TEXT NOT NULL,
+          transliteration TEXT NOT NULL,
+          translation_en TEXT NOT NULL,
+          type TEXT NOT NULL,
+          total_verses INTEGER NOT NULL
+        )
+      ''');
+
+      // Create indexes for faster search
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_translations_verse ON translations(verse_id)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_translations_lang ON translations(language_code)',
+      );
+    }
+
+    if (oldVersion < 8) {
+      debugPrint('➕ Adding memorization_logs table...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS memorization_logs (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          surah_number INTEGER NOT NULL,
+          from_ayah INTEGER NOT NULL,
+          to_ayah INTEGER NOT NULL,
+          type TEXT NOT NULL CHECK(type IN ('memorization', 'revision')),
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(user_id)
+        )
+      ''');
+
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_memorization_logs_user ON memorization_logs(user_id)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_memorization_logs_date ON memorization_logs(created_at)',
+      );
+    }
+
+    if (oldVersion < 9) {
+      debugPrint('➕ Adding duas table...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS duas (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          category TEXT NOT NULL,
+          title_ar TEXT NOT NULL,
+          title_en TEXT,
+          dua_text TEXT NOT NULL,
+          transliteration TEXT,
+          translation TEXT,
+          count INTEGER DEFAULT 1,
+          source TEXT,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+      ''');
+
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_duas_category ON duas(category)',
+      );
+    }
+
+    if (oldVersion < 10) {
+      debugPrint('➕ Adding azkar_logs table...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS azkar_logs (
+          log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          dua_id INTEGER NOT NULL,
+          count INTEGER DEFAULT 0,
+          date TEXT NOT NULL,
+          FOREIGN KEY (user_id) REFERENCES users(user_id),
+          FOREIGN KEY (dua_id) REFERENCES duas(id),
+          UNIQUE(user_id, dua_id, date)
+        )
+      ''');
+
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_azkar_logs_date ON azkar_logs(date)',
+      );
+    }
+
+    if (oldVersion < 11) {
+      debugPrint('➕ Adding tajweed_rules table...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS tajweed_rules (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          category TEXT NOT NULL,
+          title TEXT NOT NULL,
+          content TEXT NOT NULL,
+          examples TEXT
+        )
+      ''');
+
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_tajweed_category ON tajweed_rules(category)',
+      );
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -131,6 +256,7 @@ class DatabaseHelper {
         ayah_number INTEGER NOT NULL,
         ayah_text TEXT NOT NULL,
         clean_text TEXT,
+        transliteration TEXT,
         page_number INTEGER,
         juz_number INTEGER
       )
@@ -241,6 +367,38 @@ class DatabaseHelper {
         FOREIGN KEY (user_id) REFERENCES users(user_id)
       )
     ''');
+
+    // Translations table
+    await db.execute('''
+      CREATE TABLE translations (
+        translation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        verse_id INTEGER NOT NULL,
+        language_code TEXT NOT NULL,
+        text TEXT NOT NULL,
+        UNIQUE(verse_id, language_code),
+        FOREIGN KEY (verse_id) REFERENCES quran(ayah_id)
+      )
+    ''');
+
+    // Chapters metadata table
+    await db.execute('''
+      CREATE TABLE chapters_metadata (
+        chapter_id INTEGER PRIMARY KEY,
+        name_arabic TEXT NOT NULL,
+        transliteration TEXT NOT NULL,
+        translation_en TEXT NOT NULL,
+        type TEXT NOT NULL,
+        total_verses INTEGER NOT NULL
+      )
+    ''');
+
+    // Create indexes for faster search
+    await db.execute(
+      'CREATE INDEX idx_translations_verse ON translations(verse_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_translations_lang ON translations(language_code)',
+    );
 
     // Initialize default badges
     await _initializeDefaultBadges(db);

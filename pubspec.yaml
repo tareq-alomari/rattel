@@ -41,6 +41,12 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   flutter_local_notifications: ^19.5.0
   timezone: ^0.10.1
+  url_launcher: ^6.2.0
+  font_awesome_flutter: ^10.6.0
+  
+  # Prayer Times & Location
+  adhan: ^2.0.0
+  geolocator: ^10.1.0
 
 dev_dependencies:
   flutter_test:
@@ -52,3 +58,17 @@ flutter:
   assets:
     - assets/images/
     - assets/data/
+    - assets/data/quran-json/data/quran.json
+    - assets/data/quran-json/data/chapters/en.json
+    - assets/data/quran-json/data/editions/en.json
+    - assets/data/quran-json/data/editions/id.json
+    - assets/data/quran-json/data/editions/ur.json
+    - assets/data/quran-json/data/editions/bn.json
+    - assets/data/quran-json/data/editions/zh.json
+    - assets/data/quran-json/data/editions/es.json
+    - assets/data/quran-json/data/editions/fr.json
+    - assets/data/quran-json/data/editions/ru.json
+    - assets/data/quran-json/data/editions/sv.json
+    - assets/data/quran-json/data/editions/tr.json
+    - assets/data/quran-json/data/editions/transliteration.json
+

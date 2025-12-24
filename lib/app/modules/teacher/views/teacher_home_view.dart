@@ -1,141 +1,301 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../routes/app_routes.dart';
-import '../../../data/services/auth_service.dart';
-import '../../auth/controllers/auth_controller.dart';
 import '../controllers/teacher_controller.dart';
+import '../controllers/teacher_main_controller.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../../routes/app_routes.dart';
 
-/// Teacher home dashboard
-class TeacherHomeView extends GetView<TeacherController> {
+/// Teacher home view with dashboard
+class TeacherHomeView extends StatelessWidget {
   const TeacherHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => TeacherController());
+    final teacherController = Get.put(TeacherController());
+    final authController = Get.find<AuthController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text('home'.tr),
+        title: Text('teacher_dashboard'.tr),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Get.toNamed(AppRoutes.teacherSettings),
+            icon: const Icon(Icons.refresh),
+            onPressed: () => teacherController.refresh(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => teacherController.logout(),
           ),
         ],
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (teacherController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
         return RefreshIndicator(
-          onRefresh: controller.loadDashboardStats,
+          onRefresh: () => teacherController.refresh(),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Welcome Section
-                Text(
-                  'مرحباً بك،',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Text(
-                  Get.find<AuthController>().currentUser.value?.name ??
-                      'المعلم',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                // Welcome card
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          child: Text(
+                            authController.fullName[0].toUpperCase(),
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'welcome'.tr + ', ${authController.fullName}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                teacherController.performanceSummary,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-
-                // Stats Cards
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        title: 'الطلاب',
-                        value: '${controller.totalStudents.value}',
-                        icon: Icons.people,
-                        color: Colors.blue,
-                        onTap: () => Get.toNamed(AppRoutes.studentsList),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        title: 'تقييمات معلقة',
-                        value: '${controller.pendingEvaluations.value}',
-                        icon: Icons.assignment_late,
-                        color: Colors.orange,
-                        onTap: () => Get.toNamed(AppRoutes.studentsList),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-
-                // Quick Actions
-                Text(
-                  'إجراءات سريعة',
-                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
 
-                // Row 1
+                // Statistics cards
                 Row(
                   children: [
                     Expanded(
-                      child: _buildQuickActionCard(
+                      child: _buildStatCard(
                         context,
-                        icon: Icons.person_add,
-                        label: 'إضافة طالب',
-                        color: Colors.green,
-                        onTap: () => _showAddStudentDialog(context),
+                        'total_students'.tr,
+                        teacherController.totalStudents.value.toString(),
+                        Icons.people,
+                        Colors.blue,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildQuickActionCard(
+                      child: _buildStatCard(
                         context,
-                        icon: Icons.rate_review,
-                        label: 'تقييم جديد',
-                        color: Colors.purple,
-                        onTap: () => Get.toNamed(AppRoutes.studentsList),
+                        'active_students'.tr,
+                        teacherController.activeStudents.value.toString(),
+                        Icons.trending_up,
+                        Colors.green,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
 
-                // Row 2
                 Row(
                   children: [
                     Expanded(
-                      child: _buildQuickActionCard(
+                      child: _buildStatCard(
                         context,
-                        icon: Icons.people,
-                        label: 'عرض الطلاب',
-                        color: Colors.blue,
-                        onTap: () => Get.toNamed(AppRoutes.studentsList),
+                        'evaluations'.tr,
+                        teacherController.totalEvaluations.value.toString(),
+                        Icons.assignment_turned_in,
+                        Colors.orange,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildQuickActionCard(
+                      child: _buildStatCard(
                         context,
-                        icon: Icons.menu_book,
-                        label: 'القرآن الكريم',
-                        color: Colors.teal,
-                        onTap: () => Get.toNamed(AppRoutes.surahSelector),
+                        'avg_score'.tr,
+                        teacherController.averageScore.value.toStringAsFixed(1),
+                        Icons.star,
+                        Colors.amber,
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+
+                // View All Students Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      try {
+                        Get.find<TeacherMainController>().changeTab(2);
+                      } catch (e) {
+                        // Fallback navigation if controller not found (e.g. testing)
+                        Get.toNamed(AppRoutes.studentsList);
+                      }
+                    },
+                    icon: const Icon(Icons.people),
+                    label: Text('view_all_students'.tr),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Activity rate card
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'student_activity_rate'.tr,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: LinearProgressIndicator(
+                            value: teacherController.activityRate / 100,
+                            minHeight: 12,
+                            backgroundColor: Colors.grey[200],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${teacherController.activityRate.toStringAsFixed(1)}% ${'active_last_week'.tr}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Recent evaluations message
+                // Recent Activity
+                Text(
+                  'recent_activity'.tr,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (teacherController.recentActivity.isEmpty)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          'no_recent_activity'.tr,
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Card(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: teacherController.recentActivity.length,
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final activity =
+                            teacherController.recentActivity[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.blue.withOpacity(0.1),
+                            child: const Icon(
+                              Icons.history,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          title: Text(activity['student_name'] ?? 'Unknown'),
+                          subtitle: Text(
+                            '${'memorized_verses'.tr}: ${activity['to_ayah'] - activity['from_ayah'] + 1} (${activity['surah_name_en'] ?? activity['surah_name'] ?? ''})',
+                          ),
+                          trailing: Text(
+                            _formatDate(activity['date']),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                const SizedBox(height: 24),
+
+                // Recent Evaluations
+                Text(
+                  'evaluations'.tr,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (teacherController.recentEvaluations.isEmpty)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          'no_recent_evaluations'.tr,
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Card(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: teacherController.recentEvaluations.length,
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final eval = teacherController.recentEvaluations[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.orange.withOpacity(0.1),
+                            child: const Icon(Icons.star, color: Colors.orange),
+                          ),
+                          title: Text(eval['student_name'] ?? 'Unknown'),
+                          subtitle: Text(
+                            '${'score'.tr}: ${eval['score']} - ${eval['notes'] ?? ''}',
+                          ),
+                          trailing: Text(
+                            _formatDate(eval['created_at']),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
@@ -144,177 +304,54 @@ class TeacherHomeView extends GetView<TeacherController> {
     );
   }
 
-  void _showAddStudentDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
-    Get.dialog(
-      AlertDialog(
-        title: const Text('إضافة طالب جديد'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'اسم الطالب',
-                  prefixIcon: Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
-                  prefixIcon: Icon(Icons.email),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('إلغاء')),
-          ElevatedButton(
-            onPressed: () async {
-              if (nameController.text.isEmpty ||
-                  emailController.text.isEmpty ||
-                  passwordController.text.isEmpty) {
-                Get.snackbar('خطأ', 'جميع الحقول مطلوبة');
-                return;
-              }
-
-              try {
-                await AuthService.instance.register(
-                  name: nameController.text.trim(),
-                  email: emailController.text.trim(),
-                  password: passwordController.text,
-                  role: 'student',
-                );
-                Get.back();
-                controller.loadDashboardStats();
-                Get.snackbar(
-                  'تم بنجاح ✅',
-                  'تم إضافة الطالب ${nameController.text}',
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
-                );
-              } catch (e) {
-                if (e.toString().contains('email_already_exists')) {
-                  Get.snackbar('خطأ', 'البريد الإلكتروني مستخدم مسبقاً');
-                } else {
-                  Get.snackbar('خطأ', 'فشل في إضافة الطالب');
-                }
-              }
-            },
-            child: const Text('إضافة'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildStatCard(
-    BuildContext context, {
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Card(
+      child: Padding(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            const SizedBox(height: 16),
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
             const SizedBox(height: 4),
-            Text(title, style: TextStyle(color: Colors.grey.shade600)),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildQuickActionCard(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+  String _formatDate(dynamic dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final date = DateTime.parse(dateStr.toString());
+      final now = DateTime.now();
+      final diff = now.difference(date);
+
+      if (diff.inDays == 0) return 'today'.tr;
+      if (diff.inDays == 1) return 'yesterday'.tr;
+      if (diff.inDays < 7) return '${diff.inDays} ${'days_ago'.tr}';
+
+      return '${date.day}/${date.month}/${date.year}';
+    } catch (e) {
+      return '';
+    }
   }
 }
