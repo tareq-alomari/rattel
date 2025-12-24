@@ -6,7 +6,7 @@ import '../modules/auth/views/register_view.dart';
 import '../modules/auth/controllers/auth_controller.dart';
 import '../modules/student/views/student_main_view.dart';
 import '../modules/student/controllers/student_controller.dart';
-import '../modules/teacher/views/teacher_home_view.dart';
+
 import '../modules/teacher/views/teacher_main_view.dart';
 import '../modules/teacher/controllers/teacher_controller.dart';
 import '../modules/quran/views/surah_selector_view.dart';
@@ -14,7 +14,7 @@ import '../modules/quran/controllers/quran_controller.dart';
 import '../modules/search/views/search_view.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/settings/controllers/settings_controller.dart';
-import '../modules/teacher/views/teacher_settings_view.dart';
+
 import '../modules/teacher/views/student_list_view.dart';
 import '../modules/teacher/controllers/student_list_controller.dart';
 import '../modules/teacher/views/student_detail_view.dart';
@@ -78,7 +78,7 @@ abstract class AppPages {
     ),
     GetPage(
       name: AppRoutes.teacherSettings,
-      page: () => const TeacherSettingsView(),
+      page: () => const SettingsView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => SettingsController());
       }),

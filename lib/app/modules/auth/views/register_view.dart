@@ -21,102 +21,111 @@ class RegisterView extends GetView<AuthController> {
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 24),
 
-              // Name field
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'name'.tr,
-                  prefixIcon: const Icon(Icons.person_outline),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Email field
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'email'.tr,
-                  prefixIcon: const Icon(Icons.email_outlined),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Password field
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'password'.tr,
-                  prefixIcon: const Icon(Icons.lock_outline),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Role selection
-              Text(
-                'select_role'.tr,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 12),
-              Obx(
-                () => Row(
-                  children: [
-                    Expanded(
-                      child: _RoleCard(
-                        title: 'student'.tr,
-                        icon: Icons.school,
-                        isSelected: controller.selectedRole.value == 'student',
-                        onTap: () => controller.selectedRole.value = 'student',
-                      ),
+                  // Name field
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'name'.tr,
+                      prefixIcon: const Icon(Icons.person_outline),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _RoleCard(
-                        title: 'teacher'.tr,
-                        icon: Icons.person,
-                        isSelected: controller.selectedRole.value == 'teacher',
-                        onTap: () => controller.selectedRole.value = 'teacher',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Register button
-              Obx(
-                () => ElevatedButton(
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : () => controller.register(
-                          nameController.text.trim(),
-                          emailController.text.trim(),
-                          passwordController.text,
-                        ),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: controller.isLoading.value
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+                  const SizedBox(height: 16),
+
+                  // Email field
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'email'.tr,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Password field
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'password'.tr,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Role selection
+                  Text(
+                    'select_role'.tr,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  Obx(
+                    () => Row(
+                      children: [
+                        Expanded(
+                          child: _RoleCard(
+                            title: 'student'.tr,
+                            icon: Icons.school,
+                            isSelected:
+                                controller.selectedRole.value == 'student',
+                            onTap: () =>
+                                controller.selectedRole.value = 'student',
                           ),
-                        )
-                      : Text('register'.tr),
-                ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _RoleCard(
+                            title: 'teacher'.tr,
+                            icon: Icons.person,
+                            isSelected:
+                                controller.selectedRole.value == 'teacher',
+                            onTap: () =>
+                                controller.selectedRole.value = 'teacher',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Register button
+                  Obx(
+                    () => ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () => controller.register(
+                              nameController.text.trim(),
+                              emailController.text.trim(),
+                              passwordController.text,
+                            ),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text('register'.tr),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

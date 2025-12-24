@@ -11,58 +11,89 @@ class TajweedView extends StatelessWidget {
     Get.put(TajweedController());
     final theme = Theme.of(context);
 
-    // List of categories to display
+    // List of categories with gradient colors
     final categories = [
-      {'id': 'noon_saakin', 'color': Colors.blue, 'icon': Icons.blur_circular},
+      {
+        'id': 'noon_saakin',
+        'colors': [Colors.blue.shade400, Colors.blue.shade700],
+        'icon': Icons.blur_circular,
+      },
       {
         'id': 'meem_saakin',
-        'color': Colors.teal,
+        'colors': [Colors.teal.shade400, Colors.teal.shade700],
         'icon': Icons.circle_outlined,
       },
-      {'id': 'madd', 'color': Colors.purple, 'icon': Icons.graphic_eq},
-      {'id': 'qalqalah', 'color': Colors.orange, 'icon': Icons.vibration},
+      {
+        'id': 'madd',
+        'colors': [Colors.purple.shade400, Colors.purple.shade700],
+        'icon': Icons.graphic_eq,
+      },
+      {
+        'id': 'qalqalah',
+        'colors': [Colors.orange.shade400, Colors.orange.shade700],
+        'icon': Icons.vibration,
+      },
       {
         'id': 'makharij',
-        'color': Colors.brown,
+        'colors': [Colors.brown.shade400, Colors.brown.shade700],
         'icon': Icons.record_voice_over,
       },
-      {'id': 'sifaat', 'color': Colors.indigo, 'icon': Icons.tune},
-      {'id': 'raa_rules', 'color': Colors.deepOrange, 'icon': Icons.explicit},
+      {
+        'id': 'sifaat',
+        'colors': [Colors.indigo.shade400, Colors.indigo.shade700],
+        'icon': Icons.tune,
+      },
+      {
+        'id': 'raa_rules',
+        'colors': [Colors.deepOrange.shade400, Colors.deepOrange.shade700],
+        'icon': Icons.explicit,
+      },
       {
         'id': 'lam_rules',
-        'color': Colors.cyan,
+        'colors': [Colors.cyan.shade400, Colors.cyan.shade700],
         'icon': Icons.looks_one,
-      }, // Placeholder icon
-      {'id': 'hamzat_wasl', 'color': Colors.grey, 'icon': Icons.link},
-      {'id': 'stopping', 'color': Colors.red, 'icon': Icons.stop_circle},
+      },
+      {
+        'id': 'hamzat_wasl',
+        'colors': [Colors.blueGrey.shade400, Colors.blueGrey.shade700],
+        'icon': Icons.link,
+      },
+      {
+        'id': 'stopping',
+        'colors': [Colors.red.shade400, Colors.red.shade700],
+        'icon': Icons.stop_circle,
+      },
     ];
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar.large(
-            title: Text('tajweed_rules'.tr),
+            title: Text(
+              'tajweed_rules'.tr,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             centerTitle: true,
-            expandedHeight: 140, // Slightly reduced
+            expandedHeight: 120,
           ),
 
           SliverPadding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200, // Tuned for mobile responsiveness
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.85, // Taller cards
+                childAspectRatio: 0.85, // Slightly taller for text
               ),
               delegate: SliverChildBuilderDelegate((context, index) {
                 final cat = categories[index];
-                return _buildGridCard(
+                return _buildGradientCard(
                   context,
                   cat['id'] as String,
                   cat['id'] as String,
                   cat['icon'] as IconData,
-                  cat['color'] as Color,
+                  cat['colors'] as List<Color>,
                 );
               }, childCount: categories.length),
             ),
@@ -74,62 +105,81 @@ class TajweedView extends StatelessWidget {
     );
   }
 
-  Widget _buildGridCard(
+  Widget _buildGradientCard(
     BuildContext context,
     String id,
     String titleKey,
     IconData icon,
-    Color color,
+    List<Color> colors,
   ) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: theme.cardColor,
-      child: InkWell(
-        onTap: () {
-          final controller = Get.find<TajweedController>();
-          controller.loadRules(id, titleKey);
-          Get.to(() => const TajweedRulesListView());
-        },
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: colors,
+        ),
         borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: colors.last.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            final controller = Get.find<TajweedController>();
+            controller.loadRules(id, titleKey);
+            Get.to(() => const TajweedRulesListView());
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 32),
                 ),
-                child: Icon(icon, color: color, size: 36),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                titleKey.tr,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 16),
+                Text(
+                  titleKey.tr,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${id}_desc'.tr,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                const SizedBox(height: 6),
+                Opacity(
+                  opacity: 0.9,
+                  child: Text(
+                    '${id}_desc'.tr,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

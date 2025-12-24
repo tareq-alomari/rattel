@@ -36,117 +36,127 @@ class StudentHomeView extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: () => studentController.refresh(),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Welcome message
-                _buildWelcomeCard(context, studentController),
-                const SizedBox(height: 16),
-
-                // Continue Reading Card
-                if (studentController.lastReadPosition.value != null) ...[
-                  _buildContinueReadingCard(context, studentController),
-                  const SizedBox(height: 16),
-                ],
-
-                // Main statistics cards
-                Row(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        'total_verses'.tr,
-                        studentController.totalVersesMemorized.value.toString(),
-                        Icons.menu_book,
-                        Colors.blue,
+                    // Welcome message
+                    _buildWelcomeCard(context, studentController),
+                    const SizedBox(height: 16),
+
+                    // Continue Reading Card
+                    if (studentController.lastReadPosition.value != null) ...[
+                      _buildContinueReadingCard(context, studentController),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Main statistics cards
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildStatCard(
+                            context,
+                            'total_verses'.tr,
+                            studentController.totalVersesMemorized.value
+                                .toString(),
+                            Icons.menu_book,
+                            Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            context,
+                            'current_streak'.tr,
+                            '${studentController.currentStreak.value} ${'days'.tr}',
+                            Icons.local_fire_department,
+                            Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildStatCard(
+                            context,
+                            'badges'.tr,
+                            studentController.totalBadges.value.toString(),
+                            Icons.emoji_events,
+                            Colors.amber,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            context,
+                            'completion'.tr,
+                            '${studentController.completionPercentage.value.toStringAsFixed(1)}%',
+                            Icons.check_circle,
+                            Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Quick Actions
+                    Text(
+                      'quick_actions'.tr,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        'current_streak'.tr,
-                        '${studentController.currentStreak.value} ${'days'.tr}',
-                        Icons.local_fire_department,
-                        Colors.orange,
-                      ),
+                    const SizedBox(height: 12),
+                    GridView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.5,
+                          ),
+                      children: [
+                        _buildQuickActionCard(
+                          context,
+                          'leaderboard'.tr,
+                          Icons.leaderboard_outlined,
+                          Colors.orange,
+                          () => Get.to(() => const LeaderboardView()),
+                        ),
+                        _buildQuickActionCard(
+                          context,
+                          'my_badges'.tr,
+                          Icons.stars_outlined,
+                          Colors.purple,
+                          () => Get.to(() => const BadgesView()),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 20),
+
+                    // Progress card
+                    _buildProgressCard(context, studentController),
+                    const SizedBox(height: 16),
+
+                    // Time-based statistics
+                    _buildTimeStatsCard(context, studentController),
+                    const SizedBox(height: 16),
+
+                    // Recent activity
+                    _buildRecentActivityCard(context, studentController),
                   ],
                 ),
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        'badges'.tr,
-                        studentController.totalBadges.value.toString(),
-                        Icons.emoji_events,
-                        Colors.amber,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        'completion'.tr,
-                        '${studentController.completionPercentage.value.toStringAsFixed(1)}%',
-                        Icons.check_circle,
-                        Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Quick Actions
-                Text(
-                  'quick_actions'.tr,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  children: [
-                    _buildQuickActionCard(
-                      context,
-                      'leaderboard'.tr,
-                      Icons.leaderboard_outlined,
-                      Colors.orange,
-                      () => Get.to(() => const LeaderboardView()),
-                    ),
-                    _buildQuickActionCard(
-                      context,
-                      'my_badges'.tr,
-                      Icons.stars_outlined,
-                      Colors.purple,
-                      () => Get.to(() => const BadgesView()),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Progress card
-                _buildProgressCard(context, studentController),
-                const SizedBox(height: 16),
-
-                // Time-based statistics
-                _buildTimeStatsCard(context, studentController),
-                const SizedBox(height: 16),
-
-                // Recent activity
-                _buildRecentActivityCard(context, studentController),
-              ],
+              ),
             ),
           ),
         );

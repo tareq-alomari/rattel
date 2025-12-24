@@ -29,7 +29,12 @@ class TajweedController extends GetxController {
       currentCategoryTitle.value = titleKey; // Key for translation
 
       final data = await _db.getTajweedRules(category);
-      rules.assignAll(data);
+      if (data.isEmpty) {
+        await _db.seedTajweedData();
+        rules.assignAll(await _db.getTajweedRules(category));
+      } else {
+        rules.assignAll(data);
+      }
     } catch (e) {
       print('Error loading rules: $e');
     } finally {

@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 11,
+      version: 12,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -230,6 +230,59 @@ class DatabaseHelper {
         'CREATE INDEX IF NOT EXISTS idx_tajweed_category ON tajweed_rules(category)',
       );
     }
+
+    if (oldVersion < 12) {
+      debugPrint('🔧 Fixing missing tables for v11...');
+      // Ensure duas table exists
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS duas (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          category TEXT NOT NULL,
+          title_ar TEXT NOT NULL,
+          title_en TEXT,
+          dua_text TEXT NOT NULL,
+          transliteration TEXT,
+          translation TEXT,
+          count INTEGER DEFAULT 1,
+          source TEXT,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+      ''');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_duas_category ON duas(category)',
+      );
+
+      // Ensure azkar_logs table exists
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS azkar_logs (
+          log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          dua_id INTEGER NOT NULL,
+          count INTEGER DEFAULT 0,
+          date TEXT NOT NULL,
+          FOREIGN KEY (user_id) REFERENCES users(user_id),
+          FOREIGN KEY (dua_id) REFERENCES duas(id),
+          UNIQUE(user_id, dua_id, date)
+        )
+      ''');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_azkar_logs_date ON azkar_logs(date)',
+      );
+
+      // Ensure tajweed_rules table exists
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS tajweed_rules (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          category TEXT NOT NULL,
+          title TEXT NOT NULL,
+          content TEXT NOT NULL,
+          examples TEXT
+        )
+      ''');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_tajweed_category ON tajweed_rules(category)',
+      );
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -398,6 +451,56 @@ class DatabaseHelper {
     );
     await db.execute(
       'CREATE INDEX idx_translations_lang ON translations(language_code)',
+    );
+
+    // Duas table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS duas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        title_ar TEXT NOT NULL,
+        title_en TEXT,
+        dua_text TEXT NOT NULL,
+        transliteration TEXT,
+        translation TEXT,
+        count INTEGER DEFAULT 1,
+        source TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_duas_category ON duas(category)',
+    );
+
+    // Azkar logs table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS azkar_logs (
+        log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        dua_id INTEGER NOT NULL,
+        count INTEGER DEFAULT 0,
+        date TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        FOREIGN KEY (dua_id) REFERENCES duas(id),
+        UNIQUE(user_id, dua_id, date)
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_azkar_logs_date ON azkar_logs(date)',
+    );
+
+    // Tajweed rules table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS tajweed_rules (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        examples TEXT
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_tajweed_category ON tajweed_rules(category)',
     );
 
     // Initialize default badges

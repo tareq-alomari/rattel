@@ -109,13 +109,21 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(controller.getSurahName(widget.surahNumber)),
-        actions: [
-          // Translation toggle
-          Obx(
-            () => IconButton(
+    return Obx(() {
+      final theme = controller.settings.value.theme;
+      final backgroundColor = _getBackgroundColor(theme);
+      final textColor = _getTextColor(theme, context);
+
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          title: Text(controller.getSurahName(widget.surahNumber)),
+          backgroundColor: backgroundColor == Colors.black
+              ? Colors.black
+              : null,
+          actions: [
+            // Translation toggle
+            IconButton(
               icon: Icon(
                 controller.settings.value.showTranslation
                     ? Icons.translate
@@ -124,111 +132,158 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               onPressed: controller.toggleTranslation,
               tooltip: 'Toggle Translation',
             ),
-          ),
-          // Language selector
-          IconButton(
-            icon: const Icon(Icons.language),
-            onPressed: _showLanguageSelector,
-            tooltip: 'Select Languages',
-          ),
-          // Settings
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Get.to(() => const QuranSettingsView()),
-            tooltip: 'Settings',
-          ),
-        ],
-      ),
-      body: Obx(() {
-        if (controller.isLoadingData.value) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading Quran data...'),
-              ],
+            // Language selector
+            IconButton(
+              icon: const Icon(Icons.language),
+              onPressed: _showLanguageSelector,
+              tooltip: 'Select Languages',
             ),
-          );
-        }
-
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.currentSurahVerses.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.warning_amber, size: 64, color: Colors.orange),
-                const SizedBox(height: 16),
-                Text('no_quran_data'.tr),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () =>
-                      controller.loadSurahVerses(widget.surahNumber),
-                  child: const Text('Retry'),
+            // Settings
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => Get.to(() => const QuranSettingsView()),
+              tooltip: 'Settings',
+            ),
+          ],
+        ),
+        body: Builder(
+          builder: (context) {
+            if (controller.isLoadingData.value) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading Quran data...'),
+                  ],
                 ),
-              ],
-            ),
-          );
-        }
-
-        return ScrollablePositionedList.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.currentSurahVerses.length + 1,
-          itemScrollController: itemScrollController,
-          itemPositionsListener: itemPositionsListener,
-          itemBuilder: (context, index) {
-            // Bismillah header
-            if (index == 0) {
-              if (widget.surahNumber != 1 && widget.surahNumber != 9) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 24,
-                    horizontal: 16,
-                  ),
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-                      style: GoogleFonts.amiri(
-                        fontSize: controller.settings.value.arabicFontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
+              );
             }
 
-            // Verses
-            final ayah = controller.currentSurahVerses[index - 1];
-            return _buildVerseCard(ayah);
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (controller.currentSurahVerses.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.warning_amber,
+                      size: 64,
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(height: 16),
+                    Text('no_quran_data'.tr),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          controller.loadSurahVerses(widget.surahNumber),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 900),
+                child: ScrollablePositionedList.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.currentSurahVerses.length + 1,
+                  itemScrollController: itemScrollController,
+                  itemPositionsListener: itemPositionsListener,
+                  itemBuilder: (context, index) {
+                    // Bismillah header
+                    if (index == 0) {
+                      if (widget.surahNumber != 1 && widget.surahNumber != 9) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 24,
+                            horizontal: 16,
+                          ),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+                              style: GoogleFonts.amiri(
+                                fontSize:
+                                    controller.settings.value.arabicFontSize,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }
+
+                    // Verses
+                    final ayah = controller.currentSurahVerses[index - 1];
+                    return _buildVerseCard(ayah, theme, textColor);
+                  },
+                ),
+              ),
+            );
           },
-        );
-      }),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openMemorizationLog,
-        icon: const Icon(Icons.add),
-        label: const Text('تسجيل الحفظ'),
-      ),
-    );
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _openMemorizationLog,
+          icon: const Icon(Icons.add),
+          label: const Text('تسجيل الحفظ'),
+        ),
+      );
+    });
   }
 
-  Widget _buildVerseCard(Ayah ayah) {
+  Color _getBackgroundColor(String theme) {
+    switch (theme) {
+      case 'dark':
+        return const Color(0xFF1E1E1E);
+      case 'sepia':
+        return const Color(0xFFF4ECD8);
+      default:
+        return Colors.white;
+    }
+  }
+
+  Color _getTextColor(String theme, BuildContext context) {
+    switch (theme) {
+      case 'dark':
+        return Colors.white;
+      case 'sepia':
+        return const Color(0xFF5D4037);
+      default:
+        return Colors.black87;
+    }
+  }
+
+  Widget _buildVerseCard(Ayah ayah, String theme, Color textColor) {
+    // Determine card color based on theme
+    Color cardColor;
+    if (theme == 'dark') {
+      cardColor = const Color(0xFF2C2C2C);
+    } else if (theme == 'sepia') {
+      cardColor = const Color(0xFFEBE0C5);
+    } else {
+      cardColor = Colors.white;
+    }
+
     return Card(
+      color: cardColor,
       margin: const EdgeInsets.only(bottom: 16),
+      elevation: theme == 'light' ? 2 : 0,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -269,6 +324,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               style: GoogleFonts.amiri(
                 fontSize: controller.settings.value.arabicFontSize,
                 height: 2,
+                color: textColor,
               ),
             ),
 
@@ -282,7 +338,9 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                   style: TextStyle(
                     fontSize: controller.settings.value.translationFontSize,
                     fontStyle: FontStyle.italic,
-                    color: Colors.grey[600],
+                    color: theme == 'dark'
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
                   ),
                 ),
               ),
@@ -319,7 +377,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                           fontSize:
                               controller.settings.value.translationFontSize,
                           height: 1.6,
-                          color: Colors.grey[700],
+                          color: textColor.withOpacity(0.9),
                         ),
                       ),
                     ],

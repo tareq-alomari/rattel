@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/teacher_main_controller.dart';
 import 'teacher_home_view.dart';
 import 'student_list_view.dart';
-import 'teacher_settings_view.dart';
+import '../../settings/views/settings_view.dart';
 import '../../quran/views/surah_selector_view.dart';
 import '../../more/views/more_view.dart';
 
@@ -20,7 +20,7 @@ class TeacherMainView extends StatelessWidget {
       const SurahSelectorView(),
       const StudentListView(),
       const MoreView(),
-      const TeacherSettingsView(),
+      const SettingsView(),
     ];
 
     return Scaffold(

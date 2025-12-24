@@ -11,22 +11,22 @@ class QuranSettingsView extends StatelessWidget {
     final controller = Get.find<QuranController>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Quran Settings')),
+      appBar: AppBar(title: Text('quran_settings'.tr)),
       body: Obx(() {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
             // Font Size Section
-            _buildSectionHeader('Font Sizes', Icons.format_size),
+            _buildSectionHeader('font_sizes'.tr, Icons.format_size),
             const SizedBox(height: 8),
             _buildFontSizeCard(
-              'Arabic Text',
+              'arabic_text'.tr,
               controller.settings.value.arabicFontSize,
               (value) => controller.updateArabicFontSize(value),
             ),
             const SizedBox(height: 12),
             _buildFontSizeCard(
-              'Translation Text',
+              'translation_text'.tr,
               controller.settings.value.translationFontSize,
               (value) => controller.updateTranslationFontSize(value),
             ),
@@ -34,17 +34,17 @@ class QuranSettingsView extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Display Options
-            _buildSectionHeader('Display Options', Icons.visibility),
+            _buildSectionHeader('display_options'.tr, Icons.visibility),
             const SizedBox(height: 8),
             _buildSwitchCard(
-              'Show Translations',
+              'show_translations'.tr,
               controller.settings.value.showTranslation,
               controller.toggleTranslation,
               Icons.translate,
             ),
             const SizedBox(height: 12),
             _buildSwitchCard(
-              'Show Transliteration',
+              'show_transliteration'.tr,
               controller.settings.value.showTransliteration,
               controller.toggleTransliteration,
               Icons.text_fields,
@@ -53,14 +53,14 @@ class QuranSettingsView extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Language Selection
-            _buildSectionHeader('Translation Languages', Icons.language),
+            _buildSectionHeader('translation_languages'.tr, Icons.language),
             const SizedBox(height: 8),
             _buildLanguageSelection(controller),
 
             const SizedBox(height: 24),
 
             // Theme Selection
-            _buildSectionHeader('Reading Theme', Icons.palette),
+            _buildSectionHeader('reading_theme'.tr, Icons.palette),
             const SizedBox(height: 8),
             _buildThemeSelection(controller),
 
@@ -68,8 +68,8 @@ class QuranSettingsView extends StatelessWidget {
 
             // Available Languages Info
             _buildInfoCard(
-              'Available Languages',
-              '${controller.availableLanguages.length} translation languages available',
+              'available_languages'.tr,
+              '${controller.availableLanguages.length} ${'available_languages_info'.tr}',
               Icons.info_outline,
             ),
           ],
@@ -130,9 +130,13 @@ class QuranSettingsView extends StatelessWidget {
             const SizedBox(height: 8),
             Slider(
               value: currentSize,
-              min: label.contains('Arabic') ? 16.0 : 12.0,
-              max: label.contains('Arabic') ? 36.0 : 24.0,
-              divisions: 20,
+              min: label == 'arabic_text'.tr
+                  ? 16.0
+                  : 12.0, // Check generated key
+              max: label == 'arabic_text'.tr
+                  ? 48.0
+                  : 24.0, // Increased max for Arabic
+              divisions: 32,
               label: currentSize.toInt().toString(),
               onChanged: onChanged,
             ),
@@ -167,9 +171,9 @@ class QuranSettingsView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select translation languages to display:',
-              style: TextStyle(fontSize: 13, color: Colors.grey),
+            Text(
+              'select_translation_languages'.tr,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -191,7 +195,7 @@ class QuranSettingsView extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'Select at least one language to show translations',
+                  'select_at_least_one_language'.tr,
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.orange[700],
@@ -207,9 +211,9 @@ class QuranSettingsView extends StatelessWidget {
 
   Widget _buildThemeSelection(QuranController controller) {
     final themes = [
-      {'name': 'Light', 'value': 'light', 'icon': Icons.light_mode},
-      {'name': 'Dark', 'value': 'dark', 'icon': Icons.dark_mode},
-      {'name': 'Sepia', 'value': 'sepia', 'icon': Icons.auto_stories},
+      {'name': 'light_mode'.tr, 'value': 'light', 'icon': Icons.light_mode},
+      {'name': 'dark_mode'.tr, 'value': 'dark', 'icon': Icons.dark_mode},
+      {'name': 'sepia_mode'.tr, 'value': 'sepia', 'icon': Icons.auto_stories},
     ];
 
     return Card(

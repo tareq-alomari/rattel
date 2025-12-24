@@ -223,6 +223,7 @@ class AppTranslations extends Translations {
     'noon_saakin_desc': 'الإظهار، الإدغام، الإقلاب، الإخفاء',
     'meem_saakin': 'أحكام الميم الساكنة',
     'meem_saakin_desc': 'الإخفاء الشفوي، إدغام المثلين، الإظهار الشفوي',
+    'madd': 'أحكام المد',
     'madd_desc': 'المد الطبيعي، المتصل، المنفصل، اللازم',
     'qalqalah': 'القلقلة',
     'qalqalah_desc': 'مراتب القلقلة وحروفها (قطب جد)',
@@ -242,6 +243,22 @@ class AppTranslations extends Translations {
     'hamzat_wasl_desc': 'حكمها في الأسماء والأفعال والحروف',
     'stopping': 'علامات الوقف',
     'stopping_desc': 'الوقف اللازم، الممنوع، الجائز...',
+
+    // Quran Settings
+    'quran_settings': 'إعدادات المصحف',
+    'font_sizes': 'أحجام الخطوط',
+    'arabic_text': 'النص العربي',
+    'translation_text': 'نص الترجمة',
+    'display_options': 'خيارات العرض',
+    'show_translations': 'إظهار الترجمة',
+    'show_transliteration': 'إظهار النطق (Transliteration)',
+    'translation_languages': 'لغات الترجمة',
+    'select_translation_languages': 'اختر لغات الترجمة للعرض:',
+    'select_at_least_one_language': 'اختر لغة واحدة على الأقل لإظهار الترجمة',
+    'reading_theme': 'ثيم القراءة',
+    'choose_reading_theme': 'اختر مظهر القراءة:',
+    'available_languages_info': 'لغات ترجمة متاحة',
+    'sepia_mode': 'سيبيا',
   };
 
   static const Map<String, String> _enUS = {
@@ -461,6 +478,7 @@ class AppTranslations extends Translations {
     'noon_saakin_desc': 'Izhar, Idgham, Iqlab, Ikhfa',
     'meem_saakin': 'Meem Saakin Rules',
     'meem_saakin_desc': 'Oral Ikhfa, Idgham, Oral Izhar',
+    'madd': 'Madd Rules',
     'madd_desc': 'Natural, Connected, Separated, Compulsory Elongation',
     'qalqalah': 'Qalqalah (Echoing)',
     'qalqalah_desc': 'Levels of Qalqalah and letters',
@@ -480,5 +498,22 @@ class AppTranslations extends Translations {
     'hamzat_wasl_desc': 'Rules in Nouns, Verbs, and Particles',
     'stopping': 'Stopping Signs',
     'stopping_desc': 'Compulsory, Forbidden, Permissible Stops',
+
+    // Quran Settings
+    'quran_settings': 'Quran Settings',
+    'font_sizes': 'Font Sizes',
+    'arabic_text': 'Arabic Text',
+    'translation_text': 'Translation Text',
+    'display_options': 'Display Options',
+    'show_translations': 'Show Translations',
+    'show_transliteration': 'Show Transliteration',
+    'translation_languages': 'Translation Languages',
+    'select_translation_languages': 'Select translation languages to display:',
+    'select_at_least_one_language':
+        'Select at least one language to show translations',
+    'reading_theme': 'Reading Theme',
+    'choose_reading_theme': 'Choose your reading theme:',
+    'available_languages_info': 'translation languages available',
+    'sepia_mode': 'Sepia',
   };
 }
