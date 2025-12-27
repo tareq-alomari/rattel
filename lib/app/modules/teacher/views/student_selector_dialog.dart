@@ -165,9 +165,7 @@ class _StudentSelectorDialogState extends State<StudentSelectorDialog> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Theme.of(
-            context,
-          ).primaryColor.withValues(alpha: 0.1),
+          backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
           child: Icon(Icons.person, color: Theme.of(context).primaryColor),
         ),
         title: Text(

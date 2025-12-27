@@ -26,9 +26,7 @@ class HalaqahDetailView extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).primaryColor.withValues(alpha: 0.1),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -86,7 +84,7 @@ class HalaqahDetailView extends StatelessWidget {
               ],
 
               // Schedule
-              if (halaqah.schedule != null && halaqah.schedule!.isNotEmpty) ...[
+              if (halaqah.schedule.isNotEmpty) ...[
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -105,7 +103,7 @@ class HalaqahDetailView extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(halaqah.schedule!),
+                              Text(halaqah.schedule),
                             ],
                           ),
                         ),

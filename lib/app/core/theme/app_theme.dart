@@ -3,16 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// App color constants
 class AppColors {
-  // Primary Colors - Emerald Green
-  static const Color primaryLight = Color(0xFF2D8C5A);
-  static const Color primaryDark = Color(0xFF4CAF50);
+  // Primary Colors - Teal/Green (matching reference design)
+  static const Color primaryLight = Color(0xFF00897B); // Teal green
+  static const Color primaryDark = Color(0xFF00695C); // Darker teal
 
-  // Accent Colors - Gold
-  static const Color accent = Color(0xFFD4AF37);
-  static const Color accentLight = Color(0xFFE6C869);
+  // Accent Colors - Orange
+  static const Color accent = Color(0xFFFF6F00); // Orange accent
+  static const Color accentLight = Color(0xFFFF8F00);
 
   // Background Colors
-  static const Color backgroundLight = Color(0xFFFAF8F5);
+  static const Color backgroundLight = Color(
+    0xFFE0F2F1,
+  ); // Mint green background
   static const Color backgroundDark = Color(0xFF1A1A2E);
 
   // Surface Colors
@@ -30,6 +32,18 @@ class AppColors {
 
   // Success Colors
   static const Color success = Color(0xFF43A047);
+
+  // Badge Colors (for achievements)
+  static const Color badgeYellow = Color(0xFFFFF9C4); // Light yellow
+  static const Color badgeOrange = Color(0xFFFFE0B2); // Light orange
+  static const Color badgePurple = Color(0xFFE1BEE7); // Light purple
+  static const Color badgeGreen = Color(0xFFC8E6C9); // Light green
+
+  // Icon Colors
+  static const Color iconOrange = Color(0xFFFF6F00);
+  static const Color iconBlue = Color(0xFF1976D2);
+  static const Color iconGreen = Color(0xFF00897B);
+  static const Color iconPurple = Color(0xFF7B1FA2);
 }
 
 /// App Theme Configuration

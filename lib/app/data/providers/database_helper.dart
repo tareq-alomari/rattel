@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -11,9 +11,10 @@ class DatabaseHelper {
 
   DatabaseHelper._init();
 
-  /// Initialize database factory for desktop platforms
+  /// Initialize database factory for desktop platforms (not web)
   static void initialize() {
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    if (!kIsWeb &&
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
     }
@@ -31,7 +32,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 11,
+      version: 13,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -225,6 +226,46 @@ class DatabaseHelper {
         )
       ''');
     }
+
+    if (oldVersion < 12) {
+      debugPrint('📚 Adding Sunnah (Hadith) tables...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS hadith_books (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          title_ar TEXT NOT NULL,
+          author TEXT NOT NULL,
+          hadith_count INTEGER DEFAULT 0
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS hadiths (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          book_id INTEGER NOT NULL,
+          hadith_number INTEGER NOT NULL,
+          text TEXT NOT NULL,
+          explanation TEXT,
+          search_term TEXT,
+          is_favorite INTEGER DEFAULT 0,
+          page_number INTEGER,
+          FOREIGN KEY (book_id) REFERENCES hadith_books(id)
+        )
+      ''');
+    }
+
+    if (oldVersion < 13) {
+      debugPrint('🧠 Adding Hadith Memorization table...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS hadith_memorization (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          hadith_id INTEGER NOT NULL,
+          status TEXT DEFAULT 'memorized', -- 'memorized', 'reviewing'
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (hadith_id) REFERENCES hadiths(id)
+        )
+      ''');
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -399,6 +440,41 @@ class DatabaseHelper {
         notes TEXT,
         attended_students TEXT,
         FOREIGN KEY (halaqah_id) REFERENCES halaqat(id)
+      )
+    ''');
+
+    // Sunnah tables
+    await db.execute('''
+      CREATE TABLE hadith_books (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        title_ar TEXT NOT NULL,
+        author TEXT NOT NULL,
+        hadith_count INTEGER DEFAULT 0
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE hadiths (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        book_id INTEGER NOT NULL,
+        hadith_number INTEGER NOT NULL,
+        text TEXT NOT NULL,
+        explanation TEXT,
+        search_term TEXT,
+        is_favorite INTEGER DEFAULT 0,
+        page_number INTEGER,
+        FOREIGN KEY (book_id) REFERENCES hadith_books(id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE hadith_memorization (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hadith_id INTEGER NOT NULL,
+        status TEXT DEFAULT 'memorized',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (hadith_id) REFERENCES hadiths(id)
       )
     ''');
 

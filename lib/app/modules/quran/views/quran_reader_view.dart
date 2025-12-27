@@ -218,7 +218,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                 children: [
                   if (isStartOfSurah) ...[
                     _buildSurahHeader(controller.getSurahName(surahNum)),
-                    if (surahNum != 9) _buildBismillah(),
+                    if (surahNum != 9 && surahNum != 1) _buildBismillah(),
                   ],
 
                   // Text Block
@@ -414,9 +414,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(

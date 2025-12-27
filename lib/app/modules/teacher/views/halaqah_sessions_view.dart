@@ -92,8 +92,8 @@ class _HalaqahSessionsViewState extends State<HalaqahSessionsView> {
   }
 
   Widget _buildSessionCard(HalaqahSession session) {
-    final date = DateTime.parse(session.date);
-    final dateText = '${date.day}/${date.month}/${date.year}';
+    final dateText =
+        '${session.date.day}/${session.date.month}/${session.date.year}';
     final attendanceCount = session.attendedStudentIds?.length ?? 0;
 
     return Card(
@@ -128,7 +128,8 @@ class _HalaqahSessionsViewState extends State<HalaqahSessionsView> {
                 ],
               ),
             ),
-          ButtonBar(
+          OverflowBar(
+            alignment: MainAxisAlignment.end,
             children: [
               TextButton.icon(
                 onPressed: () => _showSessionDetails(session),
@@ -210,7 +211,7 @@ class _HalaqahSessionsViewState extends State<HalaqahSessionsView> {
 
                   final session = HalaqahSession(
                     halaqahId: widget.halaqah.id!,
-                    date: selectedDate.toIso8601String(),
+                    date: selectedDate,
                     topic: topicController.text,
                     notes: notesController.text,
                   );
@@ -241,7 +242,10 @@ class _HalaqahSessionsViewState extends State<HalaqahSessionsView> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('التاريخ', session.date),
+            _buildDetailRow(
+              'التاريخ',
+              '${session.date.day}/${session.date.month}/${session.date.year}',
+            ),
             if (session.notes != null)
               _buildDetailRow('الملاحظات', session.notes!),
             _buildDetailRow(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../../../data/models/memorization_models.dart';
 import '../../../data/providers/database_helper.dart';
@@ -22,7 +23,7 @@ class MemorizationController extends GetxController {
           .where((p) => p.status == 'active')
           .toList();
     } catch (e) {
-      print('Error loading plans: $e');
+      debugPrint('Error loading plans: $e');
     } finally {
       isLoading.value = false;
     }

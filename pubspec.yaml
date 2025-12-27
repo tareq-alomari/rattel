@@ -49,6 +49,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
 
 flutter:
@@ -57,4 +59,8 @@ flutter:
     - assets/images/
     - assets/data/
     - assets/data/quran-api/data/
+    - assets/data/Quran-App-Data/
     - assets/data/Quran-App-Data/Tafaseer/
+    - assets/data/Quran-App-Data/Hadith Books Json/
+    - assets/data/Quran-App-Data/azkar.json
+    - assets/data/Quran-App-Data/names_of_allah.json

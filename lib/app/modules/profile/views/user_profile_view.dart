@@ -49,7 +49,7 @@ class UserProfileView extends StatelessWidget {
                         radius: 60,
                         backgroundColor: Theme.of(
                           context,
-                        ).primaryColor.withValues(alpha: 0.1),
+                        ).primaryColor.withOpacity(0.1),
                         child: Icon(
                           Icons.person,
                           size: 60,
@@ -99,7 +99,7 @@ class UserProfileView extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withValues(alpha: 0.2),
+                        color: Colors.amber.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: Colors.amber),
                       ),
@@ -255,7 +255,7 @@ class UserProfileView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -290,8 +290,8 @@ class UserProfileView extends StatelessWidget {
           width: 80,
           decoration: BoxDecoration(
             color: isEarned
-                ? Colors.amber.withValues(alpha: 0.2)
-                : Colors.grey.withValues(alpha: 0.1),
+                ? Colors.amber.withOpacity(0.2)
+                : Colors.grey.withOpacity(0.1),
             shape: BoxShape.circle,
             border: Border.all(
               color: isEarned ? Colors.amber : Colors.grey,

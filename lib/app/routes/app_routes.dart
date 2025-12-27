@@ -15,4 +15,7 @@ abstract class AppRoutes {
   static const studentDetail = '/student/:id';
   static const evaluation = '/evaluation/:id';
   static const studentBadges = '/student-badges';
+  static const hadith = '/hadith';
+  static const azkar = '/azkar';
+  static const allahNames = '/allah-names';
 }

@@ -1,0 +1,45 @@
+00:00 +0: loading C:/projects/apps/rattel/integration_test/app_test.dart
+Building Windows application...                                    55.0s
+√ Built build\windows\x64\runner\Debug\rattel.exe
+00:00 +0: Sunnah Module Walkthrough
+*** sqflite warning ***
+
+You are changing sqflite default factory.
+Be aware of the potential side effects. Any library using sqflite
+will have this factory as the default for all operations.
+
+*** sqflite warning ***
+
+✅ Quran data already loaded
+⏳ Starting to load Sunnah data...
+📖 Loading book: صحيح البخاري (bukhari.json)...
+✅ Loaded 7008 hadiths for bukhari
+📖 Loading book: صحيح مسلم (muslim.json)...
+✅ Loaded 5362 hadiths for muslim
+📖 Loading book: سنن أبي داود (abi_daud.json)...
+✅ Loaded 4590 hadiths for abi_daud
+📖 Loading book: جامع الترمذي (trmizi.json)...
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Sunnah button not found on Home Screen
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:149:31)
+#1      main.<anonymous closure> (file:///C:/projects/apps/rattel/integration_test/app_test.dart:30:7)
+<asynchronous suspension>
+#2      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  Sunnah Module Walkthrough
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +0 -1: Sunnah Module Walkthrough [E]
+  Test failed. See exception logs above.
+  The test description was: Sunnah Module Walkthrough
+  
+00:05 +0 -1: (tearDownAll)
+00:06 +0 -1: Some tests failed.

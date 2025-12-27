@@ -8,8 +8,6 @@ class BadgesView extends GetView<BadgesController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => BadgesController());
-
     return Scaffold(
       appBar: AppBar(title: Text('badges'.tr)),
       body: Obx(() {

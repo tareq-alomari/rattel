@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
@@ -77,7 +78,7 @@ class TafseerService extends GetxService {
       );
       _tafseerData = json.decode(jsonString);
     } catch (e) {
-      print('Error loading tafseer ($source): $e');
+      debugPrint('Error loading tafseer ($source): $e');
     } finally {
       _isLoading = false;
     }

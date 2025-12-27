@@ -190,6 +190,18 @@ class AppTranslations extends Translations {
     'create': 'إنشاء',
     'no_halaqat': 'لا توجد حلقات',
     'halaqah_details_coming_soon': 'تفاصيل الحلقة قريباً',
+
+    // Hadith
+    'sunnah_module': 'السنة النبوية',
+    'search_hadith': 'بحث في الأحاديث',
+    'no_books_found': 'لا توجد كتب',
+    'restart_app_to_load': 'يرجى إعادة تشغيل التطبيق لتحميل البيانات',
+    'no_book_selected': 'لم يتم اختيار كتاب',
+    'hadith_number': 'حديث رقم #',
+    'hadiths_count': '@count حديث',
+    'start_searching_sunnah': 'ابدا البحث في كتب السنة',
+    'no_results_found': 'لا توجد نتائج',
+    'search_placeholder': 'ابحث عن حديث...',
   };
 
   static const Map<String, String> _enUS = {
@@ -380,5 +392,17 @@ class AppTranslations extends Translations {
     'create': 'Create',
     'no_halaqat': 'No circles yet',
     'halaqah_details_coming_soon': 'Circle details coming soon',
+
+    // Hadith
+    'sunnah_module': 'Sunnah (Hadith)',
+    'search_hadith': 'Search Hadiths',
+    'no_books_found': 'No Books Found',
+    'restart_app_to_load': 'Please restart app to load data',
+    'no_book_selected': 'No Book Selected',
+    'hadith_number': 'Hadith #',
+    'hadiths_count': '@count Hadiths',
+    'start_searching_sunnah': 'Start searching in Sunnah books',
+    'no_results_found': 'No results found',
+    'search_placeholder': 'Search hadiths...',
   };
 }

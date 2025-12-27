@@ -28,6 +28,12 @@ import '../modules/teacher/controllers/student_detail_controller.dart';
 import '../modules/quran/views/bookmarks_view.dart';
 import '../modules/quran/controllers/bookmarks_controller.dart';
 import '../modules/profile/views/user_profile_view.dart';
+import '../modules/hadith/views/hadith_view.dart';
+import '../modules/hadith/controllers/hadith_controller.dart';
+import '../modules/azkar/views/azkar_view.dart';
+import '../modules/azkar/controllers/azkar_controller.dart';
+import '../modules/azkar/views/allah_names_view.dart';
+import '../modules/azkar/controllers/allah_names_controller.dart';
 import 'middlewares/auth_middleware.dart';
 
 /// App pages configuration
@@ -154,5 +160,26 @@ abstract class AppPages {
       }),
     ),
     GetPage(name: '/profile', page: () => const UserProfileView()),
+    GetPage(
+      name: AppRoutes.hadith,
+      page: () => const HadithView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => HadithController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.azkar,
+      page: () => const AzkarView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => AzkarController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.allahNames,
+      page: () => const AllahNamesView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => AllahNamesController());
+      }),
+    ),
   ];
 }
