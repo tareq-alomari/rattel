@@ -203,6 +203,28 @@ class AuthService {
     }
   }
 
+  /// Update user profile
+  Future<void> updateProfile({required String name}) async {
+    if (_currentUser == null) return;
+
+    try {
+      final db = await DatabaseHelper.instance.database;
+
+      await db.update(
+        'users',
+        {'name': name},
+        where: 'user_id = ?',
+        whereArgs: [_currentUser!.userId],
+      );
+
+      _currentUser = _currentUser!.copyWith(name: name);
+      await _saveUserToPrefs(_currentUser!);
+    } catch (e) {
+      debugPrint('Update profile error: $e');
+      rethrow;
+    }
+  }
+
   /// Get user by ID
   Future<UserModel?> getUserById(int userId) async {
     try {

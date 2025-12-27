@@ -56,7 +56,7 @@ class _SplashViewState extends State<SplashView> {
               Icon(
                 Icons.menu_book_rounded,
                 size: 100,
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withValues(alpha: 0.1),
               ),
               const SizedBox(height: 24),
               Text(

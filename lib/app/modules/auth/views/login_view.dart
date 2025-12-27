@@ -9,7 +9,6 @@ class LoginView extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => AuthController());
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 
@@ -37,6 +36,7 @@ class LoginView extends GetView<AuthController> {
 
               // Email field
               TextField(
+                key: const Key('login_email'),
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
@@ -48,6 +48,7 @@ class LoginView extends GetView<AuthController> {
 
               // Password field
               TextField(
+                key: const Key('login_password'),
                 controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
@@ -60,6 +61,7 @@ class LoginView extends GetView<AuthController> {
               // Login button
               Obx(
                 () => ElevatedButton(
+                  key: const Key('login_submit'),
                   onPressed: controller.isLoading.value
                       ? null
                       : () => controller.login(
@@ -89,6 +91,7 @@ class LoginView extends GetView<AuthController> {
                 children: [
                   Text('no_account'.tr),
                   TextButton(
+                    key: const Key('goto_register'),
                     onPressed: () => Get.toNamed(AppRoutes.register),
                     child: Text('register'.tr),
                   ),

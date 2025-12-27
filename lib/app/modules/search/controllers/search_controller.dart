@@ -13,25 +13,37 @@ class SearchController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxInt selectedSurah = 0.obs;
 
-  /// Search Quran verses
-  Future<void> searchQuran(String query) async {
+  @override
+  void onInit() {
+    super.onInit();
+    // Debounce search
+    debounce(
+      searchQuery,
+      (query) => _performSearch(query),
+      time: const Duration(milliseconds: 500),
+    );
+  }
+
+  /// Search Quran verses (updates query to trigger debounce)
+  void searchQuran(String query) {
+    searchQuery.value = query;
+  }
+
+  /// Internal search execution
+  Future<void> _performSearch(String query) async {
     if (query.trim().isEmpty) {
       searchResults.clear();
-      searchQuery.value = '';
       return;
     }
 
     try {
       isLoading.value = true;
-      searchQuery.value = query;
-
       List<Ayah> results;
       if (selectedSurah.value == 0) {
         results = await _dbService.searchQuran(query);
       } else {
         results = await _dbService.searchInSurah(selectedSurah.value, query);
       }
-
       searchResults.value = results;
     } catch (e) {
       debugPrint('Error searching Quran: $e');
