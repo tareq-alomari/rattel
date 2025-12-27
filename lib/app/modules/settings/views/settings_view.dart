@@ -54,7 +54,7 @@ class SettingsView extends GetView<SettingsController> {
                     trailing: Switch(
                       value: controller.settings.value.theme == 'dark',
                       onChanged: (_) => controller.toggleTheme(),
-                      activeColor: AppColors.primaryLight,
+                      activeThumbColor: AppColors.primaryLight,
                     ),
                   ),
                 ),
@@ -101,7 +101,7 @@ class SettingsView extends GetView<SettingsController> {
                     trailing: Switch(
                       value: controller.settings.value.dailyReminderEnabled,
                       onChanged: (_) => controller.toggleDailyReminder(),
-                      activeColor: AppColors.primaryLight,
+                      activeThumbColor: AppColors.primaryLight,
                     ),
                   ),
                 ),
@@ -112,7 +112,7 @@ class SettingsView extends GetView<SettingsController> {
                     trailing: Switch(
                       value: controller.settings.value.notificationsEnabled,
                       onChanged: (_) => controller.toggleNotifications(),
-                      activeColor: const Color(0xFF059669),
+                      activeThumbColor: const Color(0xFF059669),
                     ),
                   ),
                 ),
@@ -123,7 +123,7 @@ class SettingsView extends GetView<SettingsController> {
                     trailing: Switch(
                       value: controller.settings.value.notificationsEnabled,
                       onChanged: (_) => controller.toggleNotifications(),
-                      activeColor: const Color(0xFF059669),
+                      activeThumbColor: const Color(0xFF059669),
                     ),
                   ),
                 ),

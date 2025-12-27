@@ -142,7 +142,9 @@ class AudioSettingsView extends StatelessWidget {
                   title: Text('no_repeat'.tr),
                   subtitle: Text('play_once'.tr),
                   value: RepeatMode.none,
+                  // ignore: deprecated_member_use
                   groupValue: audioService.repeatMode.value,
+                  // ignore: deprecated_member_use
                   onChanged: (value) {
                     if (value != null) {
                       audioService.setRepeatMode(value);
@@ -153,7 +155,9 @@ class AudioSettingsView extends StatelessWidget {
                   title: Text('repeat_ayah'.tr),
                   subtitle: Text('repeat_current_ayah'.tr),
                   value: RepeatMode.ayah,
+                  // ignore: deprecated_member_use
                   groupValue: audioService.repeatMode.value,
+                  // ignore: deprecated_member_use
                   onChanged: (value) {
                     if (value != null) {
                       audioService.setRepeatMode(value);
@@ -164,7 +168,9 @@ class AudioSettingsView extends StatelessWidget {
                   title: Text('repeat_range'.tr),
                   subtitle: Text('repeat_ayah_range'.tr),
                   value: RepeatMode.range,
+                  // ignore: deprecated_member_use
                   groupValue: audioService.repeatMode.value,
+                  // ignore: deprecated_member_use
                   onChanged: (value) {
                     if (value != null) {
                       audioService.setRepeatMode(value);

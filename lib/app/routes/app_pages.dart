@@ -138,20 +138,7 @@ abstract class AppPages {
         Get.lazyPut(() => MemorizationController());
       }),
     ),
-    GetPage(
-      name: '/teacher/students',
-      page: () => const StudentListView(),
-      binding: BindingsBuilder(() {
-        Get.lazyPut(() => StudentListController());
-      }),
-    ),
-    GetPage(
-      name: '/student/:id',
-      page: () => const StudentDetailView(),
-      binding: BindingsBuilder(() {
-        Get.lazyPut(() => StudentDetailController());
-      }),
-    ),
+
     GetPage(
       name: '/bookmarks',
       page: () => const BookmarksView(),

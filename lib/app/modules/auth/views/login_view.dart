@@ -9,7 +9,6 @@ class LoginView extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => AuthController());
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 

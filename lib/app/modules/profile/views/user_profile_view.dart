@@ -49,7 +49,7 @@ class UserProfileView extends StatelessWidget {
                         radius: 60,
                         backgroundColor: Theme.of(
                           context,
-                        ).primaryColor.withOpacity(0.1),
+                        ).primaryColor.withValues(alpha: 0.1),
                         child: Icon(
                           Icons.person,
                           size: 60,
@@ -99,7 +99,7 @@ class UserProfileView extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withOpacity(0.2),
+                        color: Colors.amber.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: Colors.amber),
                       ),
@@ -255,7 +255,7 @@ class UserProfileView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -290,8 +290,8 @@ class UserProfileView extends StatelessWidget {
           width: 80,
           decoration: BoxDecoration(
             color: isEarned
-                ? Colors.amber.withOpacity(0.2)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.amber.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.1),
             shape: BoxShape.circle,
             border: Border.all(
               color: isEarned ? Colors.amber : Colors.grey,
@@ -338,7 +338,7 @@ class UserProfileView extends StatelessWidget {
 
     Get.dialog(
       AlertDialog(
-        title: Text('edit'.tr + ' ' + 'profile'.tr),
+        title: Text('${'edit'.tr} ${'profile'.tr}'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -353,8 +353,7 @@ class UserProfileView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'email'.tr +
-                    ': ${authController.currentUser.value?.email ?? ''}',
+                '${'email'.tr}: ${authController.currentUser.value?.email ?? ''}',
                 style: TextStyle(color: Colors.grey[600]),
               ),
             ],
@@ -363,15 +362,11 @@ class UserProfileView extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Get.back(), child: Text('cancel'.tr)),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Implement update user name in database
-              Get.back();
-              Get.snackbar(
-                'success'.tr,
-                'تم تحديث الملف الشخصي',
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-              );
+            onPressed: () async {
+              if (nameController.text.isNotEmpty) {
+                Get.back(); // Close dialog first
+                await authController.updateProfile(nameController.text);
+              }
             },
             child: Text('save'.tr),
           ),

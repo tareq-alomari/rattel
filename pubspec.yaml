@@ -43,8 +43,12 @@ dependencies:
   timezone: ^0.10.1
   
     # Audio
+
   just_audio: ^0.9.36
   audio_session: ^0.1.18
+  
+  # PDF Viewer
+  flutter_pdfview: ^1.3.2
 
 dev_dependencies:
   flutter_test:
@@ -62,5 +66,7 @@ flutter:
     - assets/data/Quran-App-Data/
     - assets/data/Quran-App-Data/Tafaseer/
     - assets/data/Quran-App-Data/Hadith Books Json/
+    - assets/data/Quran-App-Data/quran_images_new_2/
+    - assets/data/Islamic-and-quran-data/quran_pdf/
     - assets/data/Quran-App-Data/azkar.json
     - assets/data/Quran-App-Data/names_of_allah.json

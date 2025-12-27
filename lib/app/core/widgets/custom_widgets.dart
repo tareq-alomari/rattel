@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 import '../theme/app_theme.dart';
 
 /// Custom card widget matching the reference design
@@ -27,7 +28,7 @@ class AppCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: elevation ?? 8,
             offset: const Offset(0, 2),
           ),
@@ -183,7 +184,7 @@ class IconWithBackground extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: backgroundColor.withOpacity(0.1),
+        color: backgroundColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(icon, color: backgroundColor, size: size),
@@ -264,6 +265,97 @@ class PointsBadge extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Unified loading widget
+class LoadingWidget extends StatelessWidget {
+  final String? message;
+
+  const LoadingWidget({super.key, this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryLight),
+          ),
+          if (message != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              message!,
+              style: GoogleFonts.cairo(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Unified error retry widget
+class ErrorRetryWidget extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  final IconData? icon;
+
+  const ErrorRetryWidget({
+    super.key,
+    required this.message,
+    required this.onRetry,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon ?? Icons.error_outline,
+              size: 48,
+              color: Colors.red.shade300,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: GoogleFonts.cairo(
+                fontSize: 16,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: Text(
+                'retry'.tr,
+                style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryLight,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

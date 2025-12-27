@@ -17,7 +17,7 @@ class AzkarView extends GetView<AzkarController> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'الأذكار اليومية',
+          'daily_azkar'.tr,
           style: GoogleFonts.cairo(
             color: AppColors.textPrimaryLight,
             fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class AzkarView extends GetView<AzkarController> {
             children: [
               // Subtitle
               Text(
-                'اختيار الأذكار الوقتية وقراءتها في أي وقت',
+                'azkar_subtitle'.tr,
                 style: GoogleFonts.cairo(
                   fontSize: 14,
                   color: Colors.grey.shade600,
@@ -56,27 +56,27 @@ class AzkarView extends GetView<AzkarController> {
                 childAspectRatio: 1.2,
                 children: [
                   _CategoryCard(
-                    title: 'أذكار الصباح',
+                    title: 'morning_azkar'.tr,
                     icon: Icons.wb_sunny,
-                    color: const Color(0xFF8B5CF6),
+                    color: AppColors.azkarPurple,
                     onTap: () => _showAzkarList(context, 'أذكار الصباح'),
                   ),
                   _CategoryCard(
-                    title: 'أذكار المساء',
+                    title: 'evening_azkar'.tr,
                     icon: Icons.nightlight,
-                    color: const Color(0xFFF59E0B),
+                    color: AppColors.azkarOrange,
                     onTap: () => _showAzkarList(context, 'أذكار المساء'),
                   ),
                   _CategoryCard(
-                    title: 'أذكار الصلاة',
+                    title: 'prayer_azkar'.tr,
                     icon: Icons.favorite,
-                    color: const Color(0xFF10B981),
+                    color: AppColors.azkarGreen,
                     onTap: () => _showAzkarList(context, 'أذكار الصلاة'),
                   ),
                   _CategoryCard(
-                    title: 'أذكار النوم',
+                    title: 'sleep_azkar'.tr,
                     icon: Icons.bedtime,
-                    color: const Color(0xFF06B6D4),
+                    color: AppColors.azkarCyan,
                     onTap: () => _showAzkarList(context, 'أذكار النوم'),
                   ),
                 ],
@@ -89,7 +89,7 @@ class AzkarView extends GetView<AzkarController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'الأذكار',
+                    'azkar_title'.tr,
                     style: GoogleFonts.cairo(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -98,9 +98,9 @@ class AzkarView extends GetView<AzkarController> {
                   TextButton(
                     onPressed: () {},
                     child: Text(
-                      'عرض الكل',
+                      'view_all'.tr,
                       style: GoogleFonts.cairo(
-                        color: const Color(0xFF059669),
+                        color: AppColors.teacherPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -117,7 +117,7 @@ class AzkarView extends GetView<AzkarController> {
                   zekr,
                   controller.allAzkar.indexOf(zekr),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -151,7 +151,7 @@ class AzkarView extends GetView<AzkarController> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFF59E0B),
+              color: AppColors.azkarOrange,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -233,7 +233,7 @@ class _CategoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -372,7 +372,7 @@ class _ZekrDetailCardState extends State<_ZekrDetailCard> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFFEF3C7).withOpacity(0.3),
+              color: const Color(0xFFFEF3C7).withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -391,7 +391,7 @@ class _ZekrDetailCardState extends State<_ZekrDetailCard> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withOpacity(0.1),
+                color: const Color(0xFF10B981).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -424,8 +424,8 @@ class _ZekrDetailCardState extends State<_ZekrDetailCard> {
             ),
             child: Text(
               currentCount >= totalCount
-                  ? 'اكتملت ($totalCount)'
-                  : 'اضغط للعد ($totalCount)',
+                  ? 'completed_count'.trParams({'count': '$totalCount'})
+                  : 'press_to_count'.trParams({'count': '$totalCount'}),
               style: GoogleFonts.cairo(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,

@@ -76,4 +76,18 @@ class AuthController extends GetxController {
     currentUser.value = null;
     Get.offAllNamed(AppRoutes.login);
   }
+
+  /// Update user profile
+  Future<void> updateProfile(String name) async {
+    try {
+      isLoading.value = true;
+      await _authService.updateProfile(name: name);
+      currentUser.value = _authService.currentUser;
+      Get.snackbar('success'.tr, 'profile_updated'.tr);
+    } catch (e) {
+      Get.snackbar('error'.tr, 'update_failed'.tr);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

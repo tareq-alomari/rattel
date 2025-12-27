@@ -11,8 +11,7 @@ void main() {
 
   // Define Keys
   const loginEmailKey = Key('login_email');
-  const loginPasswordKey = Key('login_password');
-  const loginSubmitKey = Key('login_submit');
+
   const gotoRegisterKey = Key('goto_register');
 
   const registerNameKey = Key('register_name');
@@ -33,7 +32,7 @@ void main() {
       // 1. Auth Flow
       // Check if we are at Login Screen (look for email field)
       if (find.byKey(loginEmailKey).evaluate().isNotEmpty) {
-        print('On Login Screen. Registering new user...');
+        debugPrint('On Login Screen. Registering new user...');
 
         // Go to Register
         await tester.tap(find.byKey(gotoRegisterKey));
@@ -59,7 +58,7 @@ void main() {
         await tester.tap(find.byKey(registerSubmitKey));
         await tester.pumpAndSettle();
       } else {
-        print('Already logged in or at Home Screen.');
+        debugPrint('Already logged in or at Home Screen.');
       }
 
       // 2. Verify Home Screen & Sunnah Button

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   // 1x1 Transparent PNG
@@ -18,16 +19,16 @@ void main() async {
   if (!await headerPattern.exists()) {
     await headerPattern.create(recursive: true);
     await headerPattern.writeAsBytes(base64Decode(transparentPngBase64));
-    print('Created surah_header_pattern.png');
+    debugPrint('Created surah_header_pattern.png');
   } else {
-    print('surah_header_pattern.png already exists');
+    debugPrint('surah_header_pattern.png already exists');
   }
 
   if (!await paperTexture.exists()) {
     await paperTexture.create(recursive: true);
     await paperTexture.writeAsBytes(base64Decode(whitePngBase64));
-    print('Created paper_texture.png');
+    debugPrint('Created paper_texture.png');
   } else {
-    print('paper_texture.png already exists');
+    debugPrint('paper_texture.png already exists');
   }
 }

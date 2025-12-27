@@ -42,7 +42,13 @@ class HalaqahController extends GetxController {
     String? description,
   }) async {
     try {
-      final teacherId = 1; // TODO: Get from AuthService
+      final teacherId =
+          Get.find<AuthController>().currentUser.value?.userId ?? 0;
+      if (teacherId == 0) {
+        Get.snackbar('خطأ', 'لم يتم العثور على معرف المعلم');
+        return;
+      }
+
       final halaqah = Halaqah(
         name: name,
         teacherId: teacherId,
@@ -105,6 +111,7 @@ class HalaqahListView extends GetView<HalaqahController> {
           itemBuilder: (context, index) {
             final halaqah = controller.halaqat[index];
             return Card(
+              key: ValueKey(halaqah.id ?? index),
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 leading: CircleAvatar(

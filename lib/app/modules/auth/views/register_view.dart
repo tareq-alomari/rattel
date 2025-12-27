@@ -4,39 +4,79 @@ import 'package:google_fonts/google_fonts.dart';
 import '../controllers/auth_controller.dart';
 
 /// Modern Register/Login screen with tabs
-class RegisterView extends GetView<AuthController> {
+class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Get.lazyPut(() => AuthController());
+  State<RegisterView> createState() => _RegisterViewState();
+}
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF0FDF4),
-        body: SafeArea(
+class _RegisterViewState extends State<RegisterView>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final AuthController controller = Get.find<AuthController>();
+
+  // Text Controllers
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  // Login Controllers
+  final loginEmailController = TextEditingController();
+  final loginPasswordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    loginEmailController.dispose();
+    loginPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF0FDF4),
+      body: SafeArea(
+        child: Center(
           child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40),
-
+                  const SizedBox(height: 20),
                   // App Logo
                   Container(
-                    width: 120,
-                    height: 120,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFF059669), Color(0xFF10B981)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF059669).withOpacity(0.3),
+                          color: const Color(0xFF059669).withValues(alpha: 0.3),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -44,18 +84,18 @@ class RegisterView extends GetView<AuthController> {
                     ),
                     child: const Icon(
                       Icons.menu_book,
-                      size: 60,
+                      size: 50,
                       color: Colors.white,
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // App Title
                   Text(
                     'رتّل',
                     style: GoogleFonts.cairo(
-                      fontSize: 32,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF059669),
                     ),
@@ -71,7 +111,7 @@ class RegisterView extends GetView<AuthController> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
 
                   // Auth Card
                   Container(
@@ -80,7 +120,7 @@ class RegisterView extends GetView<AuthController> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -96,12 +136,13 @@ class RegisterView extends GetView<AuthController> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TabBar(
+                            controller: _tabController,
                             indicator: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -118,16 +159,22 @@ class RegisterView extends GetView<AuthController> {
                           ),
                         ),
 
-                        // Tab Views
-                        SizedBox(
-                          height: 600,
-                          child: TabBarView(
-                            children: [_buildRegisterForm(), _buildLoginForm()],
-                          ),
+                        // Form Content
+                        // Instead of TabBarView with fixed height, we show content directly
+                        // using AnimatedCrossFade or just simple condition based on index.
+                        // This allows natural height expansion.
+                        AnimatedCrossFade(
+                          firstChild: _buildRegisterForm(),
+                          secondChild: _buildLoginForm(),
+                          crossFadeState: _tabController.index == 0
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          duration: const Duration(milliseconds: 300),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -138,12 +185,6 @@ class RegisterView extends GetView<AuthController> {
   }
 
   Widget _buildRegisterForm() {
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final phoneController = TextEditingController();
-    final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
-
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -278,9 +319,6 @@ class RegisterView extends GetView<AuthController> {
   }
 
   Widget _buildLoginForm() {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -290,7 +328,7 @@ class RegisterView extends GetView<AuthController> {
 
           // Email Field
           _buildTextField(
-            controller: emailController,
+            controller: loginEmailController,
             label: 'البريد الإلكتروني',
             hint: 'example@email.com',
             icon: Icons.email_outlined,
@@ -301,7 +339,7 @@ class RegisterView extends GetView<AuthController> {
 
           // Password Field
           _buildTextField(
-            controller: passwordController,
+            controller: loginPasswordController,
             label: 'كلمة المرور',
             icon: Icons.lock_outline,
             isPassword: true,
@@ -332,8 +370,8 @@ class RegisterView extends GetView<AuthController> {
               onPressed: controller.isLoading.value
                   ? null
                   : () => controller.login(
-                      emailController.text.trim(),
-                      passwordController.text,
+                      loginEmailController.text.trim(),
+                      loginPasswordController.text,
                     ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF059669),
@@ -364,12 +402,15 @@ class RegisterView extends GetView<AuthController> {
 
           const SizedBox(height: 24),
 
-          // Sign up link
+          // Switch Info
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Switch tab to Register
+                  _tabController.animateTo(0);
+                },
                 child: Text(
                   'سجّل الآن',
                   style: GoogleFonts.cairo(
@@ -460,7 +501,7 @@ class _UserTypeCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF059669).withOpacity(0.1)
+              ? const Color(0xFF059669).withValues(alpha: 0.1)
               : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(

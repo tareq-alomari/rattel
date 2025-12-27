@@ -44,6 +44,21 @@ class AppColors {
   static const Color iconBlue = Color(0xFF1976D2);
   static const Color iconGreen = Color(0xFF00897B);
   static const Color iconPurple = Color(0xFF7B1FA2);
+
+  // Teacher View Colors
+  static const Color teacherPrimary = Color(0xFF059669);
+  static const Color teacherPrimaryDark = Color(0xFF10B981);
+  static const Color teacherBackground = Color(0xFFF0FDF4);
+  static const Color statBlue = Color(0xFF3B82F6);
+  static const Color statPurple = Color(0xFF8B5CF6);
+  static const Color statOrange = Color(0xFFF59E0B);
+  static const Color statRed = Color(0xFFEF4444);
+
+  // Azkar View Colors
+  static const Color azkarPurple = Color(0xFF8B5CF6);
+  static const Color azkarOrange = Color(0xFFF59E0B);
+  static const Color azkarGreen = Color(0xFF10B981);
+  static const Color azkarCyan = Color(0xFF06B6D4);
 }
 
 /// App Theme Configuration

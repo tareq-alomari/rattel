@@ -45,7 +45,7 @@ class _SplashViewState extends State<SplashView> {
             end: Alignment.bottomCenter,
             colors: [
               Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.primary.withOpacity(0.8),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -56,7 +56,7 @@ class _SplashViewState extends State<SplashView> {
               Icon(
                 Icons.menu_book_rounded,
                 size: 100,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.1),
               ),
               const SizedBox(height: 24),
               Text(
@@ -70,7 +70,7 @@ class _SplashViewState extends State<SplashView> {
               Text(
                 'تطبيق حفظ القرآن الكريم',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(height: 48),

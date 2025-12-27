@@ -67,18 +67,19 @@ class SunnahDataLoader {
 
     // Check if database actually has data
     final db = await DatabaseHelper.instance.database;
-    final booksCount =
-        Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM hadith_books'),
-        ) ??
-        0;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM hadith_books',
+    );
+    final booksCount = result.isNotEmpty
+        ? (result.first['count'] as int?) ?? 0
+        : 0;
 
     if (isLoaded && booksCount > 0) {
       debugPrint('✅ Sunnah data already loaded.');
       return;
     }
 
-    // If marked as loaded but no data, clear the flag
+    // If marked as loaded but no data, clear the flag and reload
     if (isLoaded && booksCount == 0) {
       debugPrint(
         '⚠️ Sunnah data marked as loaded but database is empty. Reloading...',

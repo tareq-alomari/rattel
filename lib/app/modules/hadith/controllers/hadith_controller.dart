@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/models/hadith.dart';
 import '../../../data/models/hadith_book.dart';
@@ -59,7 +60,7 @@ class HadithController extends GetxController {
       final results = await _repository.search(query);
       searchResults.assignAll(results);
     } catch (e) {
-      print('Error searching hadiths: $e');
+      debugPrint('Error searching hadiths: $e');
     } finally {
       isSearching.value = false;
     }
@@ -80,7 +81,7 @@ class HadithController extends GetxController {
 
       await _repository.toggleFavorite(hadith.id!, newStatus);
     } catch (e) {
-      print('Error toggling favorite: $e');
+      debugPrint('Error toggling favorite: $e');
     }
   }
 
@@ -107,7 +108,7 @@ class HadithController extends GetxController {
       final ids = await _repository.getMemorizedHadithIds();
       memorizedHadithIds.assignAll(ids);
     } catch (e) {
-      print('Error loading memorized hadiths: $e');
+      debugPrint('Error loading memorized hadiths: $e');
     }
   }
 
@@ -125,15 +126,15 @@ class HadithController extends GetxController {
   Future<void> loadBooks() async {
     try {
       isLoadingBooks.value = true;
-      print('📚 Loading hadith books...');
+      debugPrint('📚 Loading hadith books...');
       final result = await _repository.getBooks();
-      print('📚 Loaded ${result.length} hadith books');
+      debugPrint('📚 Loaded ${result.length} hadith books');
       books.assignAll(result);
       if (result.isEmpty) {
-        print('⚠️ No hadith books found in database!');
+        debugPrint('⚠️ No hadith books found in database!');
       }
     } catch (e) {
-      print('❌ Error loading books: $e');
+      debugPrint('❌ Error loading books: $e');
     } finally {
       isLoadingBooks.value = false;
     }
@@ -166,7 +167,7 @@ class HadithController extends GetxController {
       hadiths.addAll(newHadiths);
       _currentPage++;
     } catch (e) {
-      print('Error loading hadiths: $e');
+      debugPrint('Error loading hadiths: $e');
     } finally {
       isLoadingHadiths.value = false;
     }

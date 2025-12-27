@@ -24,6 +24,16 @@ class HalaqahService extends GetxService {
     return results.map((map) => Halaqah.fromMap(map)).toList();
   }
 
+  /// Get count of active Halaqat for a teacher
+  Future<int> getTeacherHalaqahCount(int teacherId) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM halaqat WHERE teacher_id = ? AND status = ?',
+      [teacherId, 'active'],
+    );
+    return (result.first['count'] as int?) ?? 0;
+  }
+
   /// Get Halaqah by ID
   Future<Halaqah?> getHalaqah(int halaqahId) async {
     final db = await DatabaseHelper.instance.database;
@@ -166,5 +176,27 @@ class HalaqahService extends GetxService {
     );
 
     return results.map((map) => HalaqahSession.fromMap(map)).toList();
+  }
+
+  /// Get upcoming sessions for a teacher
+  Future<List<Map<String, dynamic>>> getTeacherUpcomingSessions(
+    int teacherId,
+  ) async {
+    final db = await DatabaseHelper.instance.database;
+    final now = DateTime.now().toIso8601String();
+
+    // Join sessions with halaqat to filter by teacher and getting halaqah name
+    return await db.rawQuery(
+      '''
+      SELECT hs.*, h.name as halaqah_name, 
+             (SELECT COUNT(*) FROM halaqah_students WHERE halaqah_id = h.id AND status = 'active') as student_count
+      FROM halaqah_sessions hs
+      JOIN halaqat h ON hs.halaqah_id = h.id
+      WHERE h.teacher_id = ? AND hs.date >= ?
+      ORDER BY hs.date ASC
+      LIMIT 5
+    ''',
+      [teacherId, now],
+    );
   }
 }

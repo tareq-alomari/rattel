@@ -97,7 +97,7 @@ class AppDrawer extends StatelessWidget {
                   'طالب في حلقة الفجر',
                   style: GoogleFonts.cairo(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: AppColors.primaryLight.withValues(alpha: 0.1),
                   ),
                 ),
               ],

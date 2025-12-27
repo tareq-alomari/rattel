@@ -10,8 +10,6 @@ class MemorizationJourneyView extends GetView<StudentController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => StudentController());
-
     return Scaffold(
       backgroundColor: const Color(0xFFF0FDF4),
       drawer: const AppDrawer(),

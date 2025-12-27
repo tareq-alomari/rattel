@@ -10,8 +10,6 @@ class StudentProfileView extends GetView<StudentController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => StudentController());
-
     return Scaffold(
       backgroundColor: const Color(0xFFF0FDF4),
       drawer: const AppDrawer(),
@@ -79,7 +77,7 @@ class StudentProfileView extends GetView<StudentController> {
                           'طالب في حلقة الفجر',
                           style: GoogleFonts.cairo(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -244,7 +242,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

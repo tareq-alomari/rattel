@@ -43,7 +43,7 @@ class StudentHomeView extends GetView<StudentController> {
             Icon(Icons.book, color: AppColors.primaryLight, size: 24),
             const SizedBox(width: 8),
             Text(
-              'رتّل',
+              'app_name'.tr,
               style: GoogleFonts.cairo(
                 color: AppColors.textPrimaryLight,
                 fontWeight: FontWeight.bold,
@@ -53,10 +53,7 @@ class StudentHomeView extends GetView<StudentController> {
           ],
         ),
         actions: [
-          GetBuilder<StudentController>(
-            init: StudentController(),
-            builder: (ctrl) => PointsBadge(points: ctrl.totalPoints.value),
-          ),
+          Obx(() => PointsBadge(points: controller.totalPoints.value)),
           const SizedBox(width: 8),
           Builder(
             builder: (context) => IconButton(
@@ -79,7 +76,7 @@ class StudentHomeView extends GetView<StudentController> {
 
               // Achievements Badges Section
               SectionHeader(
-                title: 'الشارات المكتسبة',
+                title: 'earned_badges'.tr,
                 icon: Icons.emoji_events,
                 iconColor: AppColors.accent,
               ),
@@ -89,7 +86,7 @@ class StudentHomeView extends GetView<StudentController> {
 
               // Statistics Section
               SectionHeader(
-                title: 'الإحصائيات',
+                title: 'statistics'.tr,
                 icon: Icons.bar_chart,
                 iconColor: AppColors.iconGreen,
               ),
@@ -99,7 +96,7 @@ class StudentHomeView extends GetView<StudentController> {
 
               // Quick Actions
               SectionHeader(
-                title: 'الإجراءات السريعة',
+                title: 'quick_actions'.tr,
                 icon: Icons.flash_on,
                 iconColor: AppColors.iconOrange,
               ),
@@ -133,10 +130,10 @@ class StudentHomeView extends GetView<StudentController> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'طالب في حلقة الفجر',
+                  'student_in_circle'.tr,
                   style: GoogleFonts.cairo(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -148,7 +145,7 @@ class StudentHomeView extends GetView<StudentController> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -157,7 +154,9 @@ class StudentHomeView extends GetView<StudentController> {
                         const Icon(Icons.star, color: Colors.white, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          '${ctrl.totalPoints.value} نقطة',
+                          'points_text'.trParams({
+                            'points': '${ctrl.totalPoints.value}',
+                          }),
                           style: GoogleFonts.cairo(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -177,7 +176,7 @@ class StudentHomeView extends GetView<StudentController> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -190,7 +189,9 @@ class StudentHomeView extends GetView<StudentController> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${ctrl.currentStreak.value} أيام متتالية',
+                          'days_streak'.trParams({
+                            'days': '${ctrl.currentStreak.value}',
+                          }),
                           style: GoogleFonts.cairo(
                             fontSize: 14,
                             color: Colors.white,
@@ -207,7 +208,7 @@ class StudentHomeView extends GetView<StudentController> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -220,7 +221,7 @@ class StudentHomeView extends GetView<StudentController> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'المستوى 5',
+                        'level_number'.trParams({'level': '5'}),
                         style: GoogleFonts.cairo(
                           fontSize: 14,
                           color: Colors.white,
@@ -261,21 +262,21 @@ class StudentHomeView extends GetView<StudentController> {
       children: [
         AchievementBadge(
           icon: Icons.emoji_events,
-          title: 'حافظ متميز',
+          title: 'badge_excellent_memorizer'.tr,
           subtitle: '',
           backgroundColor: AppColors.badgeYellow,
           iconColor: Colors.orange,
         ),
         AchievementBadge(
           icon: Icons.local_fire_department,
-          title: 'متواصل',
+          title: 'badge_consistent'.tr,
           subtitle: '',
           backgroundColor: AppColors.badgeOrange,
           iconColor: Colors.deepOrange,
         ),
         AchievementBadge(
           icon: Icons.menu_book,
-          title: 'قارئ متميز',
+          title: 'badge_excellent_reader'.tr,
           subtitle: '',
           backgroundColor: AppColors.badgeGreen,
           iconColor: AppColors.primaryLight,
@@ -283,7 +284,7 @@ class StudentHomeView extends GetView<StudentController> {
         ),
         AchievementBadge(
           icon: Icons.star,
-          title: 'مراجع نشيط',
+          title: 'badge_active_reviewer'.tr,
           subtitle: '',
           backgroundColor: AppColors.badgePurple,
           iconColor: AppColors.iconPurple,
@@ -295,27 +296,26 @@ class StudentHomeView extends GetView<StudentController> {
   /// Statistics section (matching reference image 3)
   Widget _buildStatisticsSection() {
     return AppCard(
-      child: GetBuilder<StudentController>(
-        init: StudentController(),
-        builder: (ctrl) => Column(
+      child: Obx(
+        () => Column(
           children: [
             ProgressBarWidget(
-              label: 'الحفظ',
-              current: ctrl.pagesMemorized.value,
+              label: 'memorization_label'.tr,
+              current: controller.pagesMemorized.value,
               total: 30,
               color: AppColors.primaryLight,
             ),
             const SizedBox(height: 16),
             ProgressBarWidget(
-              label: 'المراجعة',
-              current: ctrl.pagesReviewed.value,
+              label: 'review_label'.tr,
+              current: controller.pagesReviewed.value,
               total: 50,
               color: Colors.purple,
             ),
             const SizedBox(height: 16),
             ProgressBarWidget(
-              label: 'الالتزام',
-              current: ctrl.currentStreak.value > 0 ? 95 : 0,
+              label: 'commitment_label'.tr,
+              current: controller.currentStreak.value > 0 ? 95 : 0,
               total: 100,
               color: Colors.orange,
             ),
@@ -337,25 +337,25 @@ class StudentHomeView extends GetView<StudentController> {
       children: [
         _buildActionCard(
           icon: Icons.book,
-          title: 'القرآن الكريم',
+          title: 'quran_action'.tr,
           color: AppColors.iconGreen,
           onTap: () => Get.toNamed(AppRoutes.surahSelector),
         ),
         _buildActionCard(
           icon: Icons.article,
-          title: 'الأحاديث',
+          title: 'hadith_action'.tr,
           color: AppColors.iconOrange,
           onTap: () => Get.toNamed(AppRoutes.hadith),
         ),
         _buildActionCard(
           icon: Icons.favorite,
-          title: 'الأذكار',
+          title: 'azkar_action'.tr,
           color: AppColors.iconPurple,
           onTap: () => Get.toNamed(AppRoutes.azkar),
         ),
         _buildActionCard(
           icon: Icons.star,
-          title: 'أسماء الله',
+          title: 'allah_names_action'.tr,
           color: AppColors.iconBlue,
           onTap: () => Get.toNamed(AppRoutes.allahNames),
         ),
@@ -377,7 +377,7 @@ class StudentHomeView extends GetView<StudentController> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 32),

@@ -24,6 +24,34 @@ class QuranController extends GetxController {
 
   final RxBool isLoading = false.obs;
 
+  // Image Mode State
+  final RxBool isImageMode = false.obs;
+
+  // PDF State
+  final List<Map<String, String>> pdfFiles = [
+    {
+      'name': 'القرآن الكريم (نسخة 1)',
+      'path': 'assets/data/Islamic-and-quran-data/quran_pdf/quran.pdf',
+    },
+    {
+      'name': 'مصحف المدينة المنورة',
+      'path':
+          'assets/data/Islamic-and-quran-data/quran_pdf/Saudi-Quran-PDF.pdf',
+    },
+    {
+      'name': 'القرآن الكريم (نسخة إلكترونية)',
+      'path': 'assets/data/Islamic-and-quran-data/quran_pdf/E-Quran-00003.pdf',
+    },
+    {
+      'name': 'رواية الدوري',
+      'path': 'assets/data/Islamic-and-quran-data/quran_pdf/rewayat_aldory.pdf',
+    },
+  ];
+
+  // Filter and Search State
+  final RxString selectedFilter = 'all'.obs;
+  final RxString searchQuery = ''.obs;
+
   // Tafseer State
   final RxString selectedTafseer = 'ar_muyassar.json'.obs;
 
@@ -108,6 +136,18 @@ class QuranController extends GetxController {
     selectedTafseer.value = filename;
     await TafseerService.to.loadTafseer(source: filename);
     update(); // Force UI update
+  }
+
+  /// Toggle Image Mode
+  void toggleImageMode() {
+    isImageMode.value = !isImageMode.value;
+    if (isImageMode.value) {
+      // Ensure we are in page view logic if we switch to images
+      isPageView.value = true;
+      // If we were in Surah list view, we need to map current verse to page?
+      // Logic: if currentSurahVerses is populated, take first verse and find its page?
+      // For now, let's assume currentPageNumber is reasonably accurate or synced.
+    }
   }
 
   /// Show Tafseer for a specific ayah
@@ -248,6 +288,39 @@ class QuranController extends GetxController {
   String getSurahName(int surahNumber) {
     final surah = surahs.firstWhereOrNull((s) => s.surahNumber == surahNumber);
     return surah?.surahName ?? 'سورة $surahNumber';
+  }
+
+  /// Get filtered surahs based on search and selected filter
+  List<SurahInfo> getFilteredSurahs() {
+    var result = surahs.toList();
+    final filter = selectedFilter.value;
+    final query = searchQuery.value.trim();
+
+    // Apply search filter first
+    if (query.isNotEmpty) {
+      result = result.where((s) => s.surahName.contains(query)).toList();
+    }
+
+    // Apply category filter
+    if (filter == 'all') return result;
+
+    if (filter == 'meccan') {
+      return result.where((s) => s.revelationType == 'Meccan').toList();
+    }
+
+    if (filter == 'medinan') {
+      return result.where((s) => s.revelationType == 'Medinan').toList();
+    }
+
+    if (filter == 'short') {
+      return result.where((s) => s.versesCount < 50).toList();
+    }
+
+    if (filter == 'long') {
+      return result.where((s) => s.versesCount >= 50).toList();
+    }
+
+    return result;
   }
 
   /// Audio: Play specific ayah

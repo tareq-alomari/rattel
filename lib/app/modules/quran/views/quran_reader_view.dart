@@ -59,6 +59,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
           Obx(
             () => IconButton(
               icon: Icon(
+                controller.isImageMode.value ? Icons.short_text : Icons.image,
+              ),
+              onPressed: controller.toggleImageMode,
+            ),
+          ),
+          Obx(
+            () => IconButton(
+              icon: Icon(
                 controller.isPageView.value ? Icons.list : Icons.menu_book,
               ),
               onPressed: () {
@@ -91,7 +99,9 @@ class _QuranReaderViewState extends State<QuranReaderView> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.isPageView.value) {
+        if (controller.isImageMode.value) {
+          return _buildImagePageView();
+        } else if (controller.isPageView.value) {
           return _buildPageView();
         } else {
           return _buildListView();
@@ -132,6 +142,47 @@ class _QuranReaderViewState extends State<QuranReaderView> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildImagePageView() {
+    return PageView.builder(
+      controller: PageController(
+        initialPage: controller.currentPageNumber.value - 1,
+      ),
+      itemCount: controller.maxPageNumber.value,
+      reverse: true, // Arabic right-to-left
+      onPageChanged: (index) {
+        controller.updatePageNumber(index + 1);
+      },
+      itemBuilder: (context, index) {
+        return InteractiveViewer(
+          minScale: 1.0,
+          maxScale: 3.0,
+          child: Center(
+            child: Image.asset(
+              'assets/data/Quran-App-Data/quran_images_new_2/${index + 1}.png',
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.broken_image,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text('image_failed'.tr),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -414,7 +465,9 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
