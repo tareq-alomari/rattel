@@ -73,11 +73,12 @@ class StudentHomeView extends GetView<StudentController> {
                   children: [
                     Expanded(
                       child: _StatCard(
-                        title: 'badges'.tr,
-                        value: '${controller.earnedBadgesCount}',
-                        icon: Icons.emoji_events,
-                        color: Colors.amber,
-                        onTap: () => Get.toNamed(AppRoutes.studentBadges),
+                        title: 'profile'.tr,
+                        value:
+                            '${controller.earnedBadgesCount}', // displaying badges count is fine
+                        icon: Icons.assignment_ind,
+                        color: Colors.purple,
+                        onTap: () => Get.toNamed('/profile'),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -88,7 +89,7 @@ class StudentHomeView extends GetView<StudentController> {
 
                 // Quick Actions
                 Text(
-                  'إجراءات سريعة',
+                  'quick_actions'.tr,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),

@@ -7,13 +7,15 @@ import 'dart:io' show Platform;
 import 'app/core/theme/app_theme.dart';
 import 'app/core/translations/app_translations.dart';
 import 'app/data/services/auth_service.dart';
-import 'app/data/services/badge_service.dart';
+import 'app/data/services/gamification_service.dart';
 import 'app/data/providers/database_helper.dart';
 import 'app/data/providers/quran_data_loader.dart';
 import 'app/routes/app_pages.dart';
 import 'app/modules/settings/controllers/settings_controller.dart';
 import 'app/modules/auth/controllers/auth_controller.dart';
 import 'app/data/services/notification_service.dart';
+import 'app/data/services/tafseer_service.dart';
+import 'app/data/services/audio_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,18 +31,24 @@ void main() async {
   await DatabaseHelper.instance.database;
 
   // Load Quran data if not already loaded
-  if (!await QuranDataLoader.isQuranDataLoaded()) {
-    debugPrint('🕌 First launch - loading Quran data...');
-    await QuranDataLoader.loadQuranData();
-  } else {
-    debugPrint('✅ Quran data already loaded');
+  try {
+    if (!await QuranDataLoader.isQuranDataLoaded()) {
+      debugPrint('🕌 First launch - loading Quran data...');
+      await QuranDataLoader.loadQuranData();
+    } else {
+      debugPrint('✅ Quran data already loaded');
+    }
+  } catch (e) {
+    debugPrint('❌ Failed to load Quran data: $e');
   }
 
-  // Initialize badges
-  await BadgeService.instance.initializeBadges();
+  // Initialize badges (via GamificationService)
+  await Get.putAsync(() => GamificationService().init());
 
   // Initialize services
   await Get.putAsync(() => NotificationService().init());
+  Get.put(TafseerService());
+  Get.put(AudioService());
   await AuthService.instance.init();
 
   // Initialize AuthController with current user
@@ -72,7 +80,7 @@ class RattelApp extends StatelessWidget {
       // Localization
       locale: Locale(Get.find<SettingsController>().settings.value.language),
       translations: AppTranslations(),
-      fallbackLocale: const Locale('en', 'US'),
+      fallbackLocale: const Locale('ar', 'SA'),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

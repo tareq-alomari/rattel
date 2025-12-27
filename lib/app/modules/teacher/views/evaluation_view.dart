@@ -147,7 +147,16 @@ class EvaluationView extends StatelessWidget {
 
               // Submit Button
               ElevatedButton(
-                onPressed: controller.submitEvaluation,
+                onPressed: () {
+                  if (controller.pendingMemorizations.isNotEmpty) {
+                    controller.submitEvaluation(
+                      studentId:
+                          controller.pendingMemorizations[0]['studentId'],
+                      score: controller.score.value,
+                      notes: controller.notesController.text,
+                    );
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(

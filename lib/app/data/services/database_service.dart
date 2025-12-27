@@ -45,6 +45,48 @@ class DatabaseService {
     return results.map((map) => Ayah.fromMap(map)).toList();
   }
 
+  /// Get verses for a specific page
+  Future<List<Ayah>> getVersesByPage(int pageNumber) async {
+    final db = await DatabaseHelper.instance.database;
+    final results = await db.query(
+      'quran',
+      where: 'page_number = ?',
+      whereArgs: [pageNumber],
+      orderBy: 'surah_number, ayah_number',
+    );
+
+    return results.map((map) => Ayah.fromMap(map)).toList();
+  }
+
+  /// Get max page number
+  Future<int> getMaxPageNumber() async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery(
+      'SELECT MAX(page_number) as max_page FROM quran',
+    );
+    return (result.first['max_page'] as int?) ?? 604;
+  }
+
+  /// Get Juz start pages
+  Future<List<Map<String, int>>> getJuzStartPages() async {
+    final db = await DatabaseHelper.instance.database;
+    final results = await db.rawQuery('''
+      SELECT juz_number, MIN(page_number) as start_page
+      FROM quran
+      GROUP BY juz_number
+      ORDER BY juz_number
+    ''');
+
+    return results
+        .map(
+          (row) => {
+            'juz': row['juz_number'] as int,
+            'page': row['start_page'] as int,
+          },
+        )
+        .toList();
+  }
+
   /// Search Quran verses
   Future<List<Ayah>> searchQuran(String query) async {
     final db = await DatabaseHelper.instance.database;
@@ -329,6 +371,69 @@ class DatabaseService {
   Future<int> addEvaluation(EvaluationModel eval) async {
     final db = await DatabaseHelper.instance.database;
     return await db.insert('evaluation', eval.toMap());
+  }
+
+  // ========== GAMIFICATION OPERATIONS ==========
+
+  /// Get user points
+  Future<int> getUserPoints(int userId) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query(
+      'users',
+      columns: ['points'],
+      where: 'user_id = ?',
+      whereArgs: [userId],
+    );
+    if (result.isNotEmpty) {
+      return (result.first['points'] as int?) ?? 0;
+    }
+    return 0;
+  }
+
+  /// Add points to user
+  Future<int> addPoints(int userId, int amount) async {
+    final db = await DatabaseHelper.instance.database;
+
+    // Get current points
+    final currentPoints = await getUserPoints(userId);
+    final newPoints = currentPoints + amount;
+
+    await db.update(
+      'users',
+      {'points': newPoints},
+      where: 'user_id = ?',
+      whereArgs: [userId],
+    );
+
+    return newPoints;
+  }
+
+  /// Get all available badges (with earned status for specific user)
+  Future<List<BadgeModel>> getAllBadges(int userId) async {
+    final db = await DatabaseHelper.instance.database;
+
+    // Left join to see if user has earned them
+    final results = await db.rawQuery(
+      '''
+      SELECT b.*, ub.earned_at as earned_date
+      FROM badges b
+      LEFT JOIN user_badges ub ON b.badge_id = ub.badge_id AND ub.user_id = ?
+    ''',
+      [userId],
+    );
+
+    return results.map((map) => BadgeModel.fromMap(map)).toList();
+  }
+
+  /// Check if user has specific badge
+  Future<bool> hasBadge(int userId, int badgeId) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query(
+      'user_badges',
+      where: 'user_id = ? AND badge_id = ?',
+      whereArgs: [userId, badgeId],
+    );
+    return result.isNotEmpty;
   }
 
   // ========== HELPERS ==========

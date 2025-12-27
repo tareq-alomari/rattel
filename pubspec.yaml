@@ -41,6 +41,10 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   flutter_local_notifications: ^19.5.0
   timezone: ^0.10.1
+  
+    # Audio
+  just_audio: ^0.9.36
+  audio_session: ^0.1.18
 
 dev_dependencies:
   flutter_test:
@@ -52,3 +56,5 @@ flutter:
   assets:
     - assets/images/
     - assets/data/
+    - assets/data/quran-api/data/
+    - assets/data/Quran-App-Data/Tafaseer/

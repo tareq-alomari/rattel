@@ -38,13 +38,16 @@ class Ayah {
   });
 
   factory Ayah.fromMap(Map<String, dynamic> map) {
+    // Handle 'id' vs 'ayah_id' difference if needed, defaulting to 0 or -1 if missing
+    final id = map['ayah_id'] ?? map['id'] ?? 0;
+
     return Ayah(
-      ayahId: map['ayah_id'] as int,
-      surahNumber: map['surah_number'] as int,
-      surahName: map['surah_name'] as String,
-      surahNameEn: map['surah_name_en'] as String,
-      ayahNumber: map['ayah_number'] as int,
-      ayahText: map['ayah_text'] as String,
+      ayahId: id is int ? id : int.tryParse(id.toString()) ?? 0,
+      surahNumber: (map['surah_number'] as int?) ?? 0,
+      surahName: (map['surah_name'] as String?) ?? '',
+      surahNameEn: (map['surah_name_en'] as String?) ?? '',
+      ayahNumber: (map['ayah_number'] as int?) ?? 0,
+      ayahText: (map['ayah_text'] as String?) ?? '',
       cleanText: map['clean_text'] as String?,
       pageNumber: map['page_number'] as int?,
       juzNumber: map['juz_number'] as int?,
@@ -90,4 +93,43 @@ class SurahInfo {
       versesCount: map['verses_count'] as int,
     );
   }
+}
+
+/// Page mapping model
+class QuranPage {
+  final int pageNumber;
+  final int surahNumber;
+  final int startAyah;
+  final int endAyah;
+
+  QuranPage({
+    required this.pageNumber,
+    required this.surahNumber,
+    required this.startAyah,
+    required this.endAyah,
+  });
+
+  factory QuranPage.fromMap(Map<String, dynamic> map) {
+    return QuranPage(
+      pageNumber: map['page_number'] as int,
+      surahNumber: map['surah_number'] as int,
+      startAyah: map['start_ayah'] as int,
+      endAyah: map['end_ayah'] as int,
+    );
+  }
+}
+
+/// Tafseer model
+class Tafseer {
+  final int id;
+  final String name;
+  final String author;
+  final String language;
+
+  Tafseer({
+    required this.id,
+    required this.name,
+    required this.author,
+    required this.language,
+  });
 }

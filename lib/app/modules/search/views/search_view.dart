@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import '../controllers/search_controller.dart' as app;
 
 /// Quran search view
-class SearchView extends StatelessWidget {
+class SearchView extends GetView<app.SearchController> {
   const SearchView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(app.SearchController());
+    // Controller is injected via binding
     final searchTextController = TextEditingController();
 
     return Scaffold(

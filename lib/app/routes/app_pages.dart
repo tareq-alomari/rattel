@@ -10,18 +10,24 @@ import '../modules/teacher/views/teacher_home_view.dart';
 import '../modules/teacher/controllers/teacher_controller.dart';
 import '../modules/quran/views/surah_selector_view.dart';
 import '../modules/quran/controllers/quran_controller.dart';
+import '../modules/search/controllers/search_controller.dart' as search_ctrl;
 import '../modules/search/views/search_view.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/settings/controllers/settings_controller.dart';
 import '../modules/teacher/views/teacher_settings_view.dart';
-import '../modules/teacher/views/student_list_view.dart';
-import '../modules/teacher/controllers/student_list_controller.dart';
-import '../modules/teacher/views/student_detail_view.dart';
-import '../modules/teacher/controllers/student_detail_controller.dart';
 import '../modules/teacher/views/evaluation_view.dart';
 import '../modules/teacher/controllers/evaluation_controller.dart';
 import '../modules/student/views/badges_view.dart';
 import '../modules/student/controllers/badges_controller.dart';
+import '../modules/memorization/views/memorization_dashboard.dart';
+import '../modules/memorization/controllers/memorization_controller.dart';
+import '../modules/teacher/views/student_list_view.dart';
+import '../modules/teacher/controllers/student_list_controller.dart';
+import '../modules/teacher/views/student_detail_view.dart';
+import '../modules/teacher/controllers/student_detail_controller.dart';
+import '../modules/quran/views/bookmarks_view.dart';
+import '../modules/quran/controllers/bookmarks_controller.dart';
+import '../modules/profile/views/user_profile_view.dart';
 import 'middlewares/auth_middleware.dart';
 
 /// App pages configuration
@@ -67,7 +73,13 @@ abstract class AppPages {
         Get.lazyPut(() => QuranController());
       }),
     ),
-    GetPage(name: AppRoutes.search, page: () => const SearchView()),
+    GetPage(
+      name: AppRoutes.search,
+      page: () => const SearchView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => search_ctrl.SearchController());
+      }),
+    ),
     GetPage(
       name: AppRoutes.settings,
       page: () => const SettingsView(),
@@ -113,5 +125,34 @@ abstract class AppPages {
         RoleMiddleware(allowedRoles: ['student']),
       ],
     ),
+    GetPage(
+      name: AppRoutes.memorization,
+      page: () => const MemorizationDashboardView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => MemorizationController());
+      }),
+    ),
+    GetPage(
+      name: '/teacher/students',
+      page: () => const StudentListView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => StudentListController());
+      }),
+    ),
+    GetPage(
+      name: '/student/:id',
+      page: () => const StudentDetailView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => StudentDetailController());
+      }),
+    ),
+    GetPage(
+      name: '/bookmarks',
+      page: () => const BookmarksView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => BookmarksController());
+      }),
+    ),
+    GetPage(name: '/profile', page: () => const UserProfileView()),
   ];
 }

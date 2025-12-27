@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 6,
+      version: 11,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -105,6 +105,126 @@ class DatabaseHelper {
         )
       ''');
     }
+
+    if (oldVersion < 7) {
+      debugPrint('↻ Recreating quran table with new schema (v7)...');
+      await db.execute('DROP TABLE IF EXISTS quran');
+      await db.execute('''
+        CREATE TABLE quran (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          surah_number INTEGER,
+          surah_name TEXT,
+          surah_name_en TEXT,
+          ayah_number INTEGER,
+          ayah_text TEXT,
+          clean_text TEXT,
+          page_number INTEGER,
+          juz_number INTEGER,
+          hizb_quarter INTEGER
+        )
+      ''');
+    }
+
+    if (oldVersion < 8) {
+      debugPrint('📅 Adding memorization_plans and daily_logs tables...');
+      await db.execute('''
+        CREATE TABLE memorization_plans (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER,
+          name TEXT NOT NULL,
+          start_date TEXT NOT NULL,
+          target_date TEXT NOT NULL,
+          start_surah INTEGER NOT NULL,
+          start_ayah INTEGER NOT NULL,
+          end_surah INTEGER NOT NULL,
+          end_ayah INTEGER NOT NULL,
+          daily_amount_pages INTEGER NOT NULL,
+          status TEXT DEFAULT 'active'
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE daily_logs (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          plan_id INTEGER NOT NULL,
+          date TEXT NOT NULL,
+          pages_reviewed INTEGER DEFAULT 0,
+          pages_memorized INTEGER DEFAULT 0,
+          rating INTEGER DEFAULT 0,
+          FOREIGN KEY (plan_id) REFERENCES memorization_plans(id)
+        )
+      ''');
+    }
+
+    if (oldVersion < 9) {
+      debugPrint('🔑 Adding user_id to memorization_plans...');
+      try {
+        await db.execute(
+          'ALTER TABLE memorization_plans ADD COLUMN user_id INTEGER',
+        );
+      } catch (e) {
+        debugPrint('Error adding user_id: $e');
+      }
+    }
+
+    if (oldVersion < 10) {
+      debugPrint('🔖 Adding bookmarks table...');
+      await db.execute('DROP TABLE IF EXISTS bookmarks');
+      await db.execute('''
+        CREATE TABLE bookmarks (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          surah INTEGER NOT NULL,
+          ayah INTEGER NOT NULL,
+          page INTEGER NOT NULL,
+          created_at TEXT NOT NULL
+        )
+      ''');
+    }
+
+    if (oldVersion < 11) {
+      debugPrint('🕌 Adding Halaqat (Quran Circles) tables...');
+
+      // Halaqat table
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS halaqat (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          teacher_id INTEGER NOT NULL,
+          schedule TEXT,
+          description TEXT,
+          created_at TEXT NOT NULL,
+          status TEXT DEFAULT 'active',
+          FOREIGN KEY (teacher_id) REFERENCES users(user_id)
+        )
+      ''');
+
+      // Halaqah Students table
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS halaqah_students (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          halaqah_id INTEGER NOT NULL,
+          student_id INTEGER NOT NULL,
+          joined_at TEXT NOT NULL,
+          status TEXT DEFAULT 'active',
+          FOREIGN KEY (halaqah_id) REFERENCES halaqat(id),
+          FOREIGN KEY (student_id) REFERENCES users(user_id),
+          UNIQUE(halaqah_id, student_id)
+        )
+      ''');
+
+      // Halaqah Sessions table
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS halaqah_sessions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          halaqah_id INTEGER NOT NULL,
+          date TEXT NOT NULL,
+          topic TEXT,
+          notes TEXT,
+          attended_students TEXT,
+          FOREIGN KEY (halaqah_id) REFERENCES halaqat(id)
+        )
+      ''');
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -124,15 +244,16 @@ class DatabaseHelper {
     // Quran table
     await db.execute('''
       CREATE TABLE quran (
-        ayah_id INTEGER PRIMARY KEY,
-        surah_number INTEGER NOT NULL,
-        surah_name TEXT NOT NULL,
-        surah_name_en TEXT NOT NULL,
-        ayah_number INTEGER NOT NULL,
-        ayah_text TEXT NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        surah_number INTEGER,
+        surah_name TEXT,
+        surah_name_en TEXT,
+        ayah_number INTEGER,
+        ayah_text TEXT,
         clean_text TEXT,
         page_number INTEGER,
-        juz_number INTEGER
+        juz_number INTEGER,
+        hizb_quarter INTEGER
       )
     ''');
 
@@ -242,6 +363,45 @@ class DatabaseHelper {
       )
     ''');
 
+    // Halaqat (Quran Circles) tables
+    await db.execute('''
+      CREATE TABLE halaqat (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        teacher_id INTEGER NOT NULL,
+        schedule TEXT,
+        description TEXT,
+        created_at TEXT NOT NULL,
+        status TEXT DEFAULT 'active',
+        FOREIGN KEY (teacher_id) REFERENCES users(user_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE halaqah_students (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        halaqah_id INTEGER NOT NULL,
+        student_id INTEGER NOT NULL,
+        joined_at TEXT NOT NULL,
+        status TEXT DEFAULT 'active',
+        FOREIGN KEY (halaqah_id) REFERENCES halaqat(id),
+        FOREIGN KEY (student_id) REFERENCES users(user_id),
+        UNIQUE(halaqah_id, student_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE halaqah_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        halaqah_id INTEGER NOT NULL,
+        date TEXT NOT NULL,
+        topic TEXT,
+        notes TEXT,
+        attended_students TEXT,
+        FOREIGN KEY (halaqah_id) REFERENCES halaqat(id)
+      )
+    ''');
+
     // Initialize default badges
     await _initializeDefaultBadges(db);
   }
@@ -296,5 +456,115 @@ class DatabaseHelper {
     final path = join(dbPath, 'rattel.db');
     await databaseFactory.deleteDatabase(path);
     _database = null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Memorization CRUD
+  // ---------------------------------------------------------------------------
+
+  Future<int> createMemorizationRecord(Map<String, dynamic> record) async {
+    final db = await instance.database;
+    return await db.insert('memorization', record);
+  }
+
+  Future<int> createMemorizationPlan(Map<String, dynamic> plan) async {
+    final db = await instance.database;
+    return await db.insert('memorization_plans', plan);
+  }
+
+  Future<List<Map<String, dynamic>>> getMemorizationPlans() async {
+    final db = await instance.database;
+    return await db.query('memorization_plans', orderBy: 'id DESC');
+  }
+
+  Future<int> updateMemorizationPlan(int id, Map<String, dynamic> plan) async {
+    final db = await instance.database;
+    return await db.update(
+      'memorization_plans',
+      plan,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> logDailyActivity(Map<String, dynamic> log) async {
+    final db = await instance.database;
+    return await db.insert('daily_logs', log);
+  }
+
+  Future<List<Map<String, dynamic>>> getDailyLogs(int planId) async {
+    final db = await instance.database;
+    return await db.query(
+      'daily_logs',
+      where: 'plan_id = ?',
+      whereArgs: [planId],
+      orderBy: 'date DESC',
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Evaluation CRUD
+  // ---------------------------------------------------------------------------
+
+  Future<int> createEvaluation(Map<String, dynamic> evaluation) async {
+    final db = await instance.database;
+    return await db.insert('evaluation', evaluation);
+  }
+
+  Future<List<Map<String, dynamic>>> getStudentEvaluations(
+    int studentId,
+  ) async {
+    // Note: Evaluations are linked to mem_id or directly to student actions
+    // For MVP phase, we might query by teacher_id or mem_id.
+    // If we want all evaluations for a student, we need to join or assume logic.
+    // The current schema links evaluation -> memorization(mem_id) -> user(user_id)
+    // Or we will add user_id directly to evaluation for simplicity later if needed.
+
+    // For now, let's assuming we pass the evaluation map directly.
+    final db = await instance.database;
+    // Join not implemented yet, simple query on table
+    return await db.query('evaluation');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Bookmarks CRUD
+  // ---------------------------------------------------------------------------
+
+  Future<int> addBookmark(Map<String, dynamic> bookmark) async {
+    final db = await instance.database;
+    return await db.insert('bookmarks', bookmark);
+  }
+
+  Future<List<Map<String, dynamic>>> getBookmarks() async {
+    final db = await instance.database;
+    return await db.query('bookmarks', orderBy: 'created_at DESC');
+  }
+
+  Future<int> deleteBookmark(int id) async {
+    final db = await instance.database;
+    return await db.delete('bookmarks', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // ---------------------------------------------------------------------------
+  // User Management
+  // ---------------------------------------------------------------------------
+
+  Future<List<Map<String, dynamic>>> getStudents() async {
+    final db = await instance.database;
+    return await db.query(
+      'users',
+      where: 'role = ?',
+      whereArgs: ['student'],
+      orderBy: 'name ASC',
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUser(int id) async {
+    final db = await instance.database;
+    final maps = await db.query('users', where: 'user_id = ?', whereArgs: [id]);
+    if (maps.isNotEmpty) {
+      return maps.first;
+    }
+    return null;
   }
 }
