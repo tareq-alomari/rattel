@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'database_helper.dart';
 
+import 'package:sqflite/sqflite.dart';
+
 /// Loader for Azkar (Daily Remembrance) data
 class AzkarDataLoader {
   static const String _isLoadedKey = 'azkar_data_loaded_v1';
@@ -17,19 +19,10 @@ class AzkarDataLoader {
   /// Load Azkar data from JSON
   static Future<void> loadAzkarData() async {
     final prefs = await SharedPreferences.getInstance();
-    final isLoaded = prefs.getBool(_isLoadedKey) ?? false;
+    final db = await DatabaseHelper.instance.database;
 
-    if (isLoaded) {
-      debugPrint('✅ Azkar data already loaded');
-      return;
-    }
-
-    try {
-      debugPrint('⏳ Loading Azkar data...');
-      final db = await DatabaseHelper.instance.database;
-
-      // Create azkar table if not exists
-      await db.execute('''
+    // 1. Ensure table exists
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS azkar (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           category TEXT NOT NULL,
@@ -39,6 +32,23 @@ class AzkarDataLoader {
           count TEXT
         )
       ''');
+
+    // 2. Check if data exists
+    final count =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM azkar'),
+        ) ??
+        0;
+
+    final isLoaded = prefs.getBool(_isLoadedKey) ?? false;
+
+    if (isLoaded && count > 0) {
+      debugPrint('✅ Azkar data already loaded');
+      return;
+    }
+
+    try {
+      debugPrint('⏳ Loading Azkar data...');
 
       // Load JSON
       final String jsonString = await rootBundle.loadString(
@@ -82,19 +92,10 @@ class AllahNamesDataLoader {
   /// Load Allah's names from JSON
   static Future<void> loadAllahNamesData() async {
     final prefs = await SharedPreferences.getInstance();
-    final isLoaded = prefs.getBool(_isLoadedKey) ?? false;
+    final db = await DatabaseHelper.instance.database;
 
-    if (isLoaded) {
-      debugPrint('✅ Allah names already loaded');
-      return;
-    }
-
-    try {
-      debugPrint('⏳ Loading Allah names...');
-      final db = await DatabaseHelper.instance.database;
-
-      // Create table if not exists
-      await db.execute('''
+    // 1. Ensure table exists
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS allah_names (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
@@ -104,6 +105,23 @@ class AllahNamesDataLoader {
           found TEXT
         )
       ''');
+
+    // 2. Check if data exists
+    final count =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM allah_names'),
+        ) ??
+        0;
+
+    final isLoaded = prefs.getBool(_isLoadedKey) ?? false;
+
+    if (isLoaded && count > 0) {
+      debugPrint('✅ Allah names already loaded');
+      return;
+    }
+
+    try {
+      debugPrint('⏳ Loading Allah names...');
 
       // Load JSON
       final String jsonString = await rootBundle.loadString(

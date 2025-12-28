@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' as ffi;
 import 'package:path/path.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
@@ -15,8 +16,8 @@ class DatabaseHelper {
   static void initialize() {
     if (!kIsWeb &&
         (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
+      ffi.sqfliteFfiInit();
+      databaseFactory = ffi.databaseFactoryFfi;
     }
   }
 
@@ -32,7 +33,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 13,
+      version: 15,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -266,6 +267,52 @@ class DatabaseHelper {
         )
       ''');
     }
+    if (oldVersion < 14) {
+      debugPrint('📝 Adding Quiz tables...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS quizzes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER,
+          plan_id INTEGER,
+          score REAL,
+          total_questions INTEGER,
+          correct_answers INTEGER,
+          type TEXT, -- 'complete_verse', 'guess_surah', 'mixed'
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(user_id)
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS quiz_questions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          quiz_id INTEGER NOT NULL,
+          question_text TEXT,
+          correct_answer TEXT,
+          user_answer TEXT,
+          is_correct INTEGER,
+          metadata TEXT, -- JSON for extra info like surah/ayah number
+          FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+        )
+      ''');
+    }
+
+    if (oldVersion < 15) {
+      debugPrint('⚙️ Updating settings table (v15)...');
+      try {
+        await db.execute(
+          'ALTER TABLE settings ADD COLUMN circle_notifications INTEGER DEFAULT 1',
+        );
+        await db.execute(
+          'ALTER TABLE settings ADD COLUMN achievement_notifications INTEGER DEFAULT 1',
+        );
+        await db.execute(
+          'ALTER TABLE settings ADD COLUMN audio_volume REAL DEFAULT 0.7',
+        );
+      } catch (e) {
+        debugPrint('⚠️ Error updating settings table (v15): $e');
+      }
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -373,6 +420,9 @@ class DatabaseHelper {
         theme TEXT DEFAULT 'light',
         notifications_enabled INTEGER DEFAULT 1,
         daily_reminder_enabled INTEGER DEFAULT 1,
+        circle_notifications INTEGER DEFAULT 1,
+        achievement_notifications INTEGER DEFAULT 1,
+        audio_volume REAL DEFAULT 0.7,
         quran_font_size REAL DEFAULT 28.0,
         reading_mode INTEGER DEFAULT 0,
         highlight_color TEXT DEFAULT "#4CAF50",
@@ -475,6 +525,34 @@ class DatabaseHelper {
         status TEXT DEFAULT 'memorized',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (hadith_id) REFERENCES hadiths(id)
+      )
+    ''');
+
+    // Quiz tables
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS quizzes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        plan_id INTEGER,
+        score REAL,
+        total_questions INTEGER,
+        correct_answers INTEGER,
+        type TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS quiz_questions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quiz_id INTEGER NOT NULL,
+        question_text TEXT,
+        correct_answer TEXT,
+        user_answer TEXT,
+        is_correct INTEGER,
+        metadata TEXT,
+        FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
       )
     ''');
 

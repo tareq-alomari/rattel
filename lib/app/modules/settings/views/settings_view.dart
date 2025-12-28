@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_drawer.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../controllers/settings_controller.dart';
 
 /// Settings View
@@ -42,6 +43,14 @@ class SettingsView extends GetView<SettingsController> {
 
             const SizedBox(height: 20),
 
+            // Profile Section (New)
+            _ProfileSection(
+              name: Get.find<AuthController>().currentUser.value?.name ?? '',
+              onNameUpdate: (newName) => controller.updateProfileName(newName),
+            ),
+
+            const SizedBox(height: 16),
+
             // Appearance Section
             _SettingsSection(
               title: 'المظهر',
@@ -55,6 +64,7 @@ class SettingsView extends GetView<SettingsController> {
                       value: controller.settings.value.theme == 'dark',
                       onChanged: (_) => controller.toggleTheme(),
                       activeThumbColor: AppColors.primaryLight,
+                      key: const Key('settings_theme_switch'),
                     ),
                   ),
                 ),
@@ -76,13 +86,18 @@ class SettingsView extends GetView<SettingsController> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: AppColors.primaryLight,
-                    inactiveTrackColor: Colors.grey.shade300,
-                    thumbColor: AppColors.primaryLight,
+                Obx(
+                  () => SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: AppColors.primaryLight,
+                      inactiveTrackColor: Colors.grey.shade300,
+                      thumbColor: AppColors.primaryLight,
+                    ),
+                    child: Slider(
+                      value: controller.settings.value.audioVolume,
+                      onChanged: (value) => controller.changeVolume(value),
+                    ),
                   ),
-                  child: Slider(value: 0.7, onChanged: (value) {}),
                 ),
               ],
             ),
@@ -102,6 +117,7 @@ class SettingsView extends GetView<SettingsController> {
                       value: controller.settings.value.dailyReminderEnabled,
                       onChanged: (_) => controller.toggleDailyReminder(),
                       activeThumbColor: AppColors.primaryLight,
+                      key: const Key('settings_notifications_switch'),
                     ),
                   ),
                 ),
@@ -110,8 +126,8 @@ class SettingsView extends GetView<SettingsController> {
                   () => _SettingItem(
                     title: 'إشعارات الحلقة',
                     trailing: Switch(
-                      value: controller.settings.value.notificationsEnabled,
-                      onChanged: (_) => controller.toggleNotifications(),
+                      value: controller.settings.value.circleNotifications,
+                      onChanged: (_) => controller.toggleCircleNotifications(),
                       activeThumbColor: const Color(0xFF059669),
                     ),
                   ),
@@ -121,8 +137,9 @@ class SettingsView extends GetView<SettingsController> {
                   () => _SettingItem(
                     title: 'إشعارات الإنجازات',
                     trailing: Switch(
-                      value: controller.settings.value.notificationsEnabled,
-                      onChanged: (_) => controller.toggleNotifications(),
+                      value: controller.settings.value.achievementNotifications,
+                      onChanged: (_) =>
+                          controller.toggleAchievementNotifications(),
                       activeThumbColor: const Color(0xFF059669),
                     ),
                   ),
@@ -239,6 +256,63 @@ class _SettingItem extends StatelessWidget {
           style: GoogleFonts.cairo(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ],
+    );
+  }
+}
+
+class _ProfileSection extends StatelessWidget {
+  final String name;
+  final Function(String) onNameUpdate;
+
+  const _ProfileSection({required this.name, required this.onNameUpdate});
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController nameController = TextEditingController(
+      text: name,
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.person, color: AppColors.primaryLight, size: 24),
+              const SizedBox(width: 12),
+              Text(
+                'الملف الشخصي',
+                style: GoogleFonts.cairo(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            key: const Key('settings_name_field'),
+            controller: nameController,
+            decoration: InputDecoration(
+              labelText: 'الاسم الكامل',
+              labelStyle: GoogleFonts.cairo(),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.save, color: AppColors.primaryLight),
+                onPressed: () => onNameUpdate(nameController.text),
+              ),
+            ),
+            style: GoogleFonts.cairo(),
+          ),
+        ],
+      ),
     );
   }
 }

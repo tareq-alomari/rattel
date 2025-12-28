@@ -1,6 +1,7 @@
 /// User model for authentication
 class UserModel {
   final int? userId;
+  final String? firebaseId;
   final String name;
   final String email;
   final String password;
@@ -10,6 +11,7 @@ class UserModel {
 
   UserModel({
     this.userId,
+    this.firebaseId,
     required this.name,
     required this.email,
     required this.password,
@@ -21,6 +23,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       userId: map['user_id'] as int?,
+      firebaseId: map['firebase_id'] as String?,
       name: map['name'] as String,
       email: map['email'] as String,
       password: map['password'] as String,
@@ -33,6 +36,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       'user_id': userId,
+      'firebase_id': firebaseId,
       'name': name,
       'email': email,
       'password': password,
@@ -44,6 +48,7 @@ class UserModel {
 
   UserModel copyWith({
     int? userId,
+    String? firebaseId,
     String? name,
     String? email,
     String? password,
@@ -53,6 +58,7 @@ class UserModel {
   }) {
     return UserModel(
       userId: userId ?? this.userId,
+      firebaseId: firebaseId ?? this.firebaseId,
       name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,

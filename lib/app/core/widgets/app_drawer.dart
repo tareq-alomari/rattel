@@ -110,6 +110,7 @@ class AppDrawer extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: [
                 _DrawerItem(
+                  key: const Key('drawer_home'),
                   icon: Icons.home,
                   title: 'الرئيسية',
                   isSelected: true,
@@ -119,6 +120,7 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  key: const Key('drawer_quran'),
                   icon: Icons.menu_book,
                   title: 'القرآن الكريم',
                   onTap: () {
@@ -127,6 +129,7 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  key: const Key('drawer_hadith'),
                   icon: Icons.library_books,
                   title: 'الأحاديث',
                   onTap: () {
@@ -143,6 +146,7 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  key: const Key('drawer_azkar'),
                   icon: Icons.wb_sunny,
                   title: 'الأذكار',
                   onTap: () {
@@ -151,6 +155,7 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  key: const Key('drawer_names'),
                   icon: Icons.auto_awesome,
                   title: 'أسماء الله الحسنى',
                   onTap: () {
@@ -175,6 +180,7 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 _DrawerItem(
+                  key: const Key('drawer_settings'),
                   icon: Icons.settings,
                   title: 'الإعدادات',
                   onTap: () {
@@ -217,6 +223,7 @@ class _DrawerItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const _DrawerItem({
+    super.key,
     required this.icon,
     required this.title,
     this.isSelected = false,

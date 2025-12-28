@@ -401,6 +401,62 @@ class QuranController extends GetxController {
     );
   }
 
+  /// Show Reciter Selector
+  void showReciterSelector() {
+    Get.bottomSheet(
+      Container(
+        height: Get.height * 0.6,
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'select_reciter'.tr,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Obx(() {
+                // Ensure AudioService has loaded reciters
+                if (AudioService.to.availableReciters.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return ListView.builder(
+                  itemCount: AudioService.to.availableReciters.length,
+                  itemBuilder: (context, index) {
+                    final reciter = AudioService.to.availableReciters[index];
+                    final isSelected =
+                        AudioService.to.currentReciterId.value == reciter.id;
+
+                    return ListTile(
+                      title: Text(reciter.name),
+                      subtitle: Text(
+                        reciter.arabicName,
+                        textDirection: TextDirection.rtl,
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : null,
+                      onTap: () {
+                        AudioService.to.changeReciter(reciter.id);
+                        Get.back();
+                      },
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
   /// Helper: Build a selectable tafseer item
   DropdownMenuItem<String> _buildItem(MapEntry<String, String> entry) {
     return DropdownMenuItem<String>(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'database_service.dart';
 import '../models/badge_model.dart';
+import 'notification_service.dart';
 
 class GamificationService extends GetxService {
   static GamificationService get to => Get.find();
@@ -41,6 +42,12 @@ class GamificationService extends GetxService {
       duration: const Duration(seconds: 2),
     );
 
+    // Also show a system notification
+    Get.find<NotificationService>().showImmediateNotification(
+      title: 'نقاط جديدة! 🌟',
+      body: 'لقد حصلت على +$amount نقطة: $reason',
+    );
+
     // Check for badge qualifications after getting points
     checkBadges(userId);
   }
@@ -67,6 +74,12 @@ class GamificationService extends GetxService {
       if (earned && badge.badgeId != null) {
         await _db.awardBadge(userId, badge.badgeId!);
         _showBadgeEarnedDialog(badge);
+
+        // Show a system notification for the badge
+        Get.find<NotificationService>().showImmediateNotification(
+          title: 'شارة جديدة! 🏆',
+          body: 'مبروك! لقد حصلت على شارة: ${badge.badgeName}',
+        );
       }
     }
 

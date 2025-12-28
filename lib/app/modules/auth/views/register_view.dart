@@ -204,6 +204,7 @@ class _RegisterViewState extends State<RegisterView>
               children: [
                 Expanded(
                   child: _UserTypeCard(
+                    key: const Key('role_student'),
                     title: 'طالب',
                     icon: Icons.school,
                     isSelected: controller.selectedRole.value == 'student',
@@ -213,6 +214,7 @@ class _RegisterViewState extends State<RegisterView>
                 const SizedBox(width: 12),
                 Expanded(
                   child: _UserTypeCard(
+                    key: const Key('role_teacher'),
                     title: 'معلم',
                     icon: Icons.person,
                     isSelected: controller.selectedRole.value == 'teacher',
@@ -227,6 +229,7 @@ class _RegisterViewState extends State<RegisterView>
 
           // Name Field
           _buildTextField(
+            key: const Key('register_name'),
             controller: nameController,
             label: 'الاسم الكامل',
             hint: 'أدخل اسمك الكامل',
@@ -237,6 +240,7 @@ class _RegisterViewState extends State<RegisterView>
 
           // Email Field
           _buildTextField(
+            key: const Key('register_email'),
             controller: emailController,
             label: 'البريد الإلكتروني',
             hint: 'example@email.com',
@@ -259,6 +263,7 @@ class _RegisterViewState extends State<RegisterView>
 
           // Password Field
           _buildTextField(
+            key: const Key('register_password'),
             controller: passwordController,
             label: 'كلمة المرور',
             icon: Icons.lock_outline,
@@ -280,6 +285,7 @@ class _RegisterViewState extends State<RegisterView>
           // Register Button
           Obx(
             () => ElevatedButton(
+              key: const Key('register_submit'),
               onPressed: controller.isLoading.value
                   ? null
                   : () => controller.register(
@@ -431,6 +437,7 @@ class _RegisterViewState extends State<RegisterView>
   }
 
   Widget _buildTextField({
+    Key? key,
     required TextEditingController controller,
     required String label,
     String? hint,
@@ -451,6 +458,7 @@ class _RegisterViewState extends State<RegisterView>
         ),
         const SizedBox(height: 8),
         TextField(
+          key: key,
           controller: controller,
           obscureText: isPassword,
           keyboardType: keyboardType,
@@ -487,6 +495,7 @@ class _UserTypeCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _UserTypeCard({
+    super.key,
     required this.title,
     required this.icon,
     required this.isSelected,

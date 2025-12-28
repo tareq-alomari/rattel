@@ -56,12 +56,14 @@ class AzkarView extends GetView<AzkarController> {
                 childAspectRatio: 1.2,
                 children: [
                   _CategoryCard(
+                    key: const Key('azkar_morning'),
                     title: 'morning_azkar'.tr,
                     icon: Icons.wb_sunny,
                     color: AppColors.azkarPurple,
                     onTap: () => _showAzkarList(context, 'أذكار الصباح'),
                   ),
                   _CategoryCard(
+                    key: const Key('azkar_evening'),
                     title: 'evening_azkar'.tr,
                     icon: Icons.nightlight,
                     color: AppColors.azkarOrange,
@@ -216,6 +218,7 @@ class _CategoryCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _CategoryCard({
+    super.key,
     required this.title,
     required this.icon,
     required this.color,

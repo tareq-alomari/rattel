@@ -97,3 +97,83 @@ class DailyLog {
     );
   }
 }
+
+class QuizResult {
+  final int? id;
+  final int? userId;
+  final int? planId;
+  final double score;
+  final int totalQuestions;
+  final int correctAnswers;
+  final String type;
+  final DateTime createdAt;
+
+  QuizResult({
+    this.id,
+    this.userId,
+    this.planId,
+    required this.score,
+    required this.totalQuestions,
+    required this.correctAnswers,
+    required this.type,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'plan_id': planId,
+      'score': score,
+      'total_questions': totalQuestions,
+      'correct_answers': correctAnswers,
+      'type': type,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
+
+  factory QuizResult.fromMap(Map<String, dynamic> map) {
+    return QuizResult(
+      id: map['id'],
+      userId: map['user_id'],
+      planId: map['plan_id'],
+      score: map['score'],
+      totalQuestions: map['total_questions'],
+      correctAnswers: map['correct_answers'],
+      type: map['type'],
+      createdAt: DateTime.parse(map['created_at']),
+    );
+  }
+}
+
+class QuizQuestion {
+  final int? id;
+  final int? quizId;
+  final String questionText;
+  final String correctAnswer;
+  String? userAnswer;
+  bool? isCorrect;
+  final String? metadata;
+
+  QuizQuestion({
+    this.id,
+    this.quizId,
+    required this.questionText,
+    required this.correctAnswer,
+    this.userAnswer,
+    this.isCorrect,
+    this.metadata,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'quiz_id': quizId,
+      'question_text': questionText,
+      'correct_answer': correctAnswer,
+      'user_answer': userAnswer,
+      'is_correct': isCorrect == true ? 1 : 0,
+      'metadata': metadata,
+    };
+  }
+}

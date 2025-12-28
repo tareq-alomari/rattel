@@ -4,6 +4,8 @@ import '../../../data/services/auth_service.dart';
 import '../../../data/services/database_service.dart';
 import '../../../data/models/settings_model.dart';
 import '../../../data/services/notification_service.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../../routes/app_routes.dart';
 
 /// Settings controller for user preferences
 class SettingsController extends GetxController {
@@ -78,6 +80,58 @@ class SettingsController extends GetxController {
     }
   }
 
+  /// Toggle circle notifications
+  Future<void> toggleCircleNotifications() async {
+    try {
+      settings.value = settings.value.copyWith(
+        circleNotifications: !settings.value.circleNotifications,
+      );
+      await _saveSettings();
+    } catch (e) {
+      debugPrint('Error toggling circle notifications: $e');
+    }
+  }
+
+  /// Toggle achievement notifications
+  Future<void> toggleAchievementNotifications() async {
+    try {
+      settings.value = settings.value.copyWith(
+        achievementNotifications: !settings.value.achievementNotifications,
+      );
+      await _saveSettings();
+    } catch (e) {
+      debugPrint('Error toggling achievement notifications: $e');
+    }
+  }
+
+  /// Change volume
+  Future<void> changeVolume(double value) async {
+    try {
+      settings.value = settings.value.copyWith(audioVolume: value);
+      await _saveSettings();
+    } catch (e) {
+      debugPrint('Error changing volume: $e');
+    }
+  }
+
+  /// Update Profile Name
+  Future<void> updateProfileName(String name) async {
+    try {
+      isLoading.value = true;
+      await _authService.updateProfile(name: name);
+      // Refresh user in AuthController if registered
+      if (Get.isRegistered<AuthController>()) {
+        Get.find<AuthController>().currentUser.value = _authService.currentUser;
+      }
+      Get.snackbar('تم التحديث', 'تم تحديث اسم الملف الشخصي بنجاح');
+    } catch (e) {
+      debugPrint('Error updating profile: $e');
+      Get.snackbar('خطأ', 'فشل تحديث الملف الشخصي');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   /// Toggle daily reminder
   Future<void> toggleDailyReminder() async {
     try {
@@ -108,7 +162,7 @@ class SettingsController extends GetxController {
       );
       await _saveSettings();
     } catch (e) {
-      debugPrint('Error toggling reading mode: $e');
+      debugPrint('Error reading mode toggle: $e');
     }
   }
 
@@ -127,10 +181,16 @@ class SettingsController extends GetxController {
   /// Logout
   Future<void> logout() async {
     try {
-      await _authService.logout();
-      Get.offAllNamed('/login');
+      if (Get.isRegistered<AuthController>()) {
+        await Get.find<AuthController>().logout();
+      } else {
+        await _authService.logout();
+        Get.offAllNamed(AppRoutes.login);
+      }
     } catch (e) {
       debugPrint('Error logging out: $e');
+      // Fallback navigation
+      Get.offAllNamed(AppRoutes.login);
     }
   }
 }
