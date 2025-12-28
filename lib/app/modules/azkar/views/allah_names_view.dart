@@ -169,6 +169,7 @@ class AllahNamesView extends GetView<AllahNamesController> {
     final color = colors[index % colors.length];
 
     return GestureDetector(
+      key: ValueKey('allah_name_$index'),
       onTap: () => controller.selectName(index),
       child: Container(
         padding: const EdgeInsets.all(16),

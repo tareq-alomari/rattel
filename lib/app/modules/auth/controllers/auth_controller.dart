@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/firebase_auth_service.dart';
@@ -91,6 +94,12 @@ class AuthController extends GetxController {
         }
         Get.snackbar('register_success'.tr, 'welcome'.tr);
       }
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        'خطأ في الحساب',
+        _getArabicErrorMessage(e.code),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
       if (e.toString().contains('email_already_exists')) {
         Get.snackbar('error'.tr, 'email_already_exists'.tr);
@@ -106,6 +115,17 @@ class AuthController extends GetxController {
   Future<void> loginWithGoogle() async {
     try {
       isLoading.value = true;
+
+      // Check if Firebase is ready
+      if (Firebase.apps.isEmpty) {
+        Get.snackbar(
+          'تنبيه',
+          'خدمات جوجل غير متاحة حالياً على هذا الجهاز. يرجى التأكد من الإعدادات.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
       final user = await _firebaseAuthService.signInWithGoogle();
       currentUser.value = user;
 
@@ -116,9 +136,27 @@ class AuthController extends GetxController {
           Get.offAllNamed(AppRoutes.teacherHome);
         }
         Get.snackbar('login_success'.tr, 'welcome'.tr);
+      } else {
+        // user is null but no exception was thrown (e.g. user cancelled)
       }
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        'خطأ في جوجل',
+        _getArabicErrorMessage(e.code),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      Get.snackbar('error'.tr, e.toString());
+      if (e.toString().contains('MissingPluginException')) {
+        Get.snackbar(
+          'تنبيه',
+          'تسجيل الدخول بجوجل غير مدعوم حالياً على نظام الويندوز. يرجى استخدام البريد الإلكتروني وكلمة المرور.',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+          backgroundColor: Colors.orange.withValues(alpha: 0.1),
+        );
+      } else {
+        Get.snackbar('error'.tr, e.toString());
+      }
     } finally {
       isLoading.value = false;
     }
@@ -126,10 +164,17 @@ class AuthController extends GetxController {
 
   /// Logout user
   Future<void> logout() async {
-    await _authService.logout();
-    await _firebaseAuthService.signOut();
-    currentUser.value = null;
-    Get.offAllNamed(AppRoutes.login);
+    try {
+      debugPrint('🚪 Logging out...');
+      await _authService.logout();
+      await _firebaseAuthService.signOut();
+    } catch (e) {
+      debugPrint('⚠️ Error during logout services: $e');
+    } finally {
+      currentUser.value = null;
+      Get.offAllNamed(AppRoutes.login);
+      debugPrint('✅ Logout complete, navigating to login');
+    }
   }
 
   /// Update user profile
@@ -143,6 +188,28 @@ class AuthController extends GetxController {
       Get.snackbar('error'.tr, 'update_failed'.tr);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// Helper to map Firebase errors to Arabic
+  String _getArabicErrorMessage(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'المستخدم غير موجود. يرجى التحقق من البريد الإلكتروني.';
+      case 'wrong-password':
+        return 'كلمة المرور غير صحيحة.';
+      case 'email-already-in-use':
+        return 'هذا البريد الإلكتروني مستخدم بالفعل.';
+      case 'invalid-email':
+        return 'البريد الإلكتروني غير صالح.';
+      case 'weak-password':
+        return 'كلمة المرور ضعيفة جداً. يجب أن تكون 6 أحرف على الأقل.';
+      case 'operation-not-allowed':
+        return 'طريقة تسجيل الدخول هذه غير مفعلة في Firebase Console.';
+      case 'network-request-failed':
+        return 'فشل الاتصال بالشبكة. يرجى التحقق من الإنترنت.';
+      default:
+        return 'حدث خطأ في Firebase: $code';
     }
   }
 }

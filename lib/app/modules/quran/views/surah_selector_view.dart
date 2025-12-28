@@ -66,6 +66,7 @@ class SurahSelectorView extends GetView<QuranController> {
             ),
             actions: [
               IconButton(
+                key: const Key('quran_search_button'),
                 icon: const Icon(Icons.search, color: Colors.white),
                 onPressed: () => _showSearchDialog(context),
               ),
@@ -85,11 +86,31 @@ class SurahSelectorView extends GetView<QuranController> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _buildFilterChip('filter_all'.tr, 'all'),
-                    _buildFilterChip('filter_meccan'.tr, 'meccan'),
-                    _buildFilterChip('filter_medinan'.tr, 'medinan'),
-                    _buildFilterChip('filter_short'.tr, 'short'),
-                    _buildFilterChip('filter_long'.tr, 'long'),
+                    _buildFilterChip(
+                      'filter_all'.tr,
+                      'all',
+                      const Key('filter_all'),
+                    ),
+                    _buildFilterChip(
+                      'filter_meccan'.tr,
+                      'meccan',
+                      const Key('filter_meccan'),
+                    ),
+                    _buildFilterChip(
+                      'filter_medinan'.tr,
+                      'medinan',
+                      const Key('filter_medinan'),
+                    ),
+                    _buildFilterChip(
+                      'filter_short'.tr,
+                      'short',
+                      const Key('filter_short'),
+                    ),
+                    _buildFilterChip(
+                      'filter_long'.tr,
+                      'long',
+                      const Key('filter_long'),
+                    ),
                   ],
                 ),
               ),
@@ -128,9 +149,10 @@ class SurahSelectorView extends GetView<QuranController> {
     );
   }
 
-  Widget _buildFilterChip(String label, String value) {
+  Widget _buildFilterChip(String label, String value, Key key) {
     final isSelected = controller.selectedFilter.value == value;
     return GestureDetector(
+      key: key,
       onTap: () => controller.selectedFilter.value = value,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

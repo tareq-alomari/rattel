@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' as ffi;
 import 'package:path/path.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
@@ -15,8 +16,8 @@ class DatabaseHelper {
   static void initialize() {
     if (!kIsWeb &&
         (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
+      ffi.sqfliteFfiInit();
+      databaseFactory = ffi.databaseFactoryFfi;
     }
   }
 
@@ -32,7 +33,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 14,
+      version: 15,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -295,6 +296,23 @@ class DatabaseHelper {
         )
       ''');
     }
+
+    if (oldVersion < 15) {
+      debugPrint('⚙️ Updating settings table (v15)...');
+      try {
+        await db.execute(
+          'ALTER TABLE settings ADD COLUMN circle_notifications INTEGER DEFAULT 1',
+        );
+        await db.execute(
+          'ALTER TABLE settings ADD COLUMN achievement_notifications INTEGER DEFAULT 1',
+        );
+        await db.execute(
+          'ALTER TABLE settings ADD COLUMN audio_volume REAL DEFAULT 0.7',
+        );
+      } catch (e) {
+        debugPrint('⚠️ Error updating settings table (v15): $e');
+      }
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -402,6 +420,9 @@ class DatabaseHelper {
         theme TEXT DEFAULT 'light',
         notifications_enabled INTEGER DEFAULT 1,
         daily_reminder_enabled INTEGER DEFAULT 1,
+        circle_notifications INTEGER DEFAULT 1,
+        achievement_notifications INTEGER DEFAULT 1,
+        audio_volume REAL DEFAULT 0.7,
         quran_font_size REAL DEFAULT 28.0,
         reading_mode INTEGER DEFAULT 0,
         highlight_color TEXT DEFAULT "#4CAF50",

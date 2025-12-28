@@ -1,12 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 
 class FirebaseAuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Stream<User?> authStateChanges() => _auth.authStateChanges();
+  bool get _isFirebaseReady => Firebase.apps.isNotEmpty;
+
+  Stream<User?> authStateChanges() {
+    if (!_isFirebaseReady) return const Stream.empty();
+    return _auth.authStateChanges();
+  }
 
   UserModel _mapFirebaseUser(User user, {String? name, String? role}) {
     return UserModel(
@@ -25,6 +31,7 @@ class FirebaseAuthService {
     String name,
     String role,
   ) async {
+    if (!_isFirebaseReady) return null;
     final cred = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -37,6 +44,7 @@ class FirebaseAuthService {
   }
 
   Future<UserModel?> signInWithEmail(String email, String password) async {
+    if (!_isFirebaseReady) return null;
     final cred = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -48,6 +56,7 @@ class FirebaseAuthService {
   }
 
   Future<UserModel?> signInWithGoogle() async {
+    if (!_isFirebaseReady) return null;
     final googleUser = await _googleSignIn.signIn();
     if (googleUser == null) return null;
     final googleAuth = await googleUser.authentication;
@@ -63,7 +72,9 @@ class FirebaseAuthService {
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    if (_isFirebaseReady) {
+      await _auth.signOut();
+    }
     await _googleSignIn.signOut();
   }
 }

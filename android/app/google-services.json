@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "48506804912",
+    "project_id": "rattel-5a4c6",
+    "storage_bucket": "rattel-5a4c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48506804912:android:0b7076505749227987f975",
+        "android_client_info": {
+          "package_name": "com.example.rattel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1BeGO1JeemiB-DJGcZcfKCMATFW5Wudg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

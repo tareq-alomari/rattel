@@ -336,24 +336,28 @@ class StudentHomeView extends GetView<StudentController> {
       childAspectRatio: 1.2,
       children: [
         _buildActionCard(
+          key: const Key('quick_action_quran'),
           icon: Icons.book,
           title: 'quran_action'.tr,
           color: AppColors.iconGreen,
           onTap: () => Get.toNamed(AppRoutes.surahSelector),
         ),
         _buildActionCard(
+          key: const Key('quick_action_sunnah'),
           icon: Icons.article,
           title: 'hadith_action'.tr,
           color: AppColors.iconOrange,
           onTap: () => Get.toNamed(AppRoutes.hadith),
         ),
         _buildActionCard(
+          key: const Key('quick_action_azkar'),
           icon: Icons.favorite,
           title: 'azkar_action'.tr,
           color: AppColors.iconPurple,
           onTap: () => Get.toNamed(AppRoutes.azkar),
         ),
         _buildActionCard(
+          key: const Key('quick_action_names'),
           icon: Icons.star,
           title: 'allah_names_action'.tr,
           color: AppColors.iconBlue,
@@ -364,12 +368,14 @@ class StudentHomeView extends GetView<StudentController> {
   }
 
   Widget _buildActionCard({
+    Key? key,
     required IconData icon,
     required String title,
     required Color color,
     required VoidCallback onTap,
   }) {
     return AppCard(
+      key: key,
       onTap: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

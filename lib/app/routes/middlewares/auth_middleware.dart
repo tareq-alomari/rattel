@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/services/auth_service.dart';
 import '../app_routes.dart';
 
@@ -8,7 +9,10 @@ class AuthMiddleware extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     final authService = AuthService.instance;
-    if (authService.currentUser == null) {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    // Check both local auth and firebase auth
+    if (authService.currentUser == null && firebaseUser == null) {
       return const RouteSettings(name: AppRoutes.login);
     }
     return null;

@@ -6,7 +6,10 @@ class SettingsModel {
   final String theme;
   final bool notificationsEnabled;
   final bool dailyReminderEnabled;
+  final bool circleNotifications;
+  final bool achievementNotifications;
   final double quranFontSize;
+  final double audioVolume;
   final bool readingMode;
   final String highlightColor;
 
@@ -17,7 +20,10 @@ class SettingsModel {
     this.theme = 'light',
     this.notificationsEnabled = true,
     this.dailyReminderEnabled = true,
+    this.circleNotifications = true,
+    this.achievementNotifications = true,
     this.quranFontSize = 28.0,
+    this.audioVolume = 0.7,
     this.readingMode = false,
     this.highlightColor = '#4CAF50',
   });
@@ -30,7 +36,11 @@ class SettingsModel {
       theme: map['theme'] as String? ?? 'light',
       notificationsEnabled: (map['notifications_enabled'] as int? ?? 1) == 1,
       dailyReminderEnabled: (map['daily_reminder_enabled'] as int? ?? 1) == 1,
+      circleNotifications: (map['circle_notifications'] as int? ?? 1) == 1,
+      achievementNotifications:
+          (map['achievement_notifications'] as int? ?? 1) == 1,
       quranFontSize: (map['quran_font_size'] as num?)?.toDouble() ?? 28.0,
+      audioVolume: (map['audio_volume'] as num?)?.toDouble() ?? 0.7,
       readingMode: (map['reading_mode'] as int? ?? 0) == 1,
       highlightColor: map['highlight_color'] as String? ?? '#4CAF50',
     );
@@ -44,7 +54,10 @@ class SettingsModel {
       'theme': theme,
       'notifications_enabled': notificationsEnabled ? 1 : 0,
       'daily_reminder_enabled': dailyReminderEnabled ? 1 : 0,
+      'circle_notifications': circleNotifications ? 1 : 0,
+      'achievement_notifications': achievementNotifications ? 1 : 0,
       'quran_font_size': quranFontSize,
+      'audio_volume': audioVolume,
       'reading_mode': readingMode ? 1 : 0,
       'highlight_color': highlightColor,
     };
@@ -57,7 +70,10 @@ class SettingsModel {
     String? theme,
     bool? notificationsEnabled,
     bool? dailyReminderEnabled,
+    bool? circleNotifications,
+    bool? achievementNotifications,
     double? quranFontSize,
+    double? audioVolume,
     bool? readingMode,
     String? highlightColor,
   }) {
@@ -68,7 +84,11 @@ class SettingsModel {
       theme: theme ?? this.theme,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       dailyReminderEnabled: dailyReminderEnabled ?? this.dailyReminderEnabled,
+      circleNotifications: circleNotifications ?? this.circleNotifications,
+      achievementNotifications:
+          achievementNotifications ?? this.achievementNotifications,
       quranFontSize: quranFontSize ?? this.quranFontSize,
+      audioVolume: audioVolume ?? this.audioVolume,
       readingMode: readingMode ?? this.readingMode,
       highlightColor: highlightColor ?? this.highlightColor,
     );
