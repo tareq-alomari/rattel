@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 13,
+      version: 14,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -266,6 +266,35 @@ class DatabaseHelper {
         )
       ''');
     }
+    if (oldVersion < 14) {
+      debugPrint('📝 Adding Quiz tables...');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS quizzes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER,
+          plan_id INTEGER,
+          score REAL,
+          total_questions INTEGER,
+          correct_answers INTEGER,
+          type TEXT, -- 'complete_verse', 'guess_surah', 'mixed'
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(user_id)
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS quiz_questions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          quiz_id INTEGER NOT NULL,
+          question_text TEXT,
+          correct_answer TEXT,
+          user_answer TEXT,
+          is_correct INTEGER,
+          metadata TEXT, -- JSON for extra info like surah/ayah number
+          FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+        )
+      ''');
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -475,6 +504,34 @@ class DatabaseHelper {
         status TEXT DEFAULT 'memorized',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (hadith_id) REFERENCES hadiths(id)
+      )
+    ''');
+
+    // Quiz tables
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS quizzes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        plan_id INTEGER,
+        score REAL,
+        total_questions INTEGER,
+        correct_answers INTEGER,
+        type TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS quiz_questions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quiz_id INTEGER NOT NULL,
+        question_text TEXT,
+        correct_answer TEXT,
+        user_answer TEXT,
+        is_correct INTEGER,
+        metadata TEXT,
+        FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
       )
     ''');
 

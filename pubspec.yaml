@@ -44,11 +44,15 @@ dependencies:
   
     # Audio
 
-  just_audio: ^0.9.36
-  audio_session: ^0.1.18
+  just_audio: ^0.10.5
+  just_audio_windows: ^0.2.2
+  audio_session: ^0.2.2
   
   # PDF Viewer
-  flutter_pdfview: ^1.3.2
+  pdfrx: ^1.1.4
+  
+  # SVG Support
+  flutter_svg: ^2.0.10
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +60,17 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  windows:
+    generate: true
+    icon_path: "assets/images/app_icon.png"
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#004d40"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
 
 flutter:
   uses-material-design: true

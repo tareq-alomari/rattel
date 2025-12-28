@@ -20,6 +20,7 @@ import '../modules/teacher/controllers/evaluation_controller.dart';
 import '../modules/student/views/badges_view.dart';
 import '../modules/student/controllers/badges_controller.dart';
 import '../modules/memorization/views/memorization_dashboard.dart';
+import '../modules/memorization/views/quiz_view.dart';
 import '../modules/memorization/controllers/memorization_controller.dart';
 import '../modules/teacher/views/student_list_view.dart';
 import '../modules/teacher/controllers/student_list_controller.dart';
@@ -34,6 +35,8 @@ import '../modules/azkar/views/azkar_view.dart';
 import '../modules/azkar/controllers/azkar_controller.dart';
 import '../modules/azkar/views/allah_names_view.dart';
 import '../modules/azkar/controllers/allah_names_controller.dart';
+import '../modules/athan/views/athan_view.dart';
+import '../modules/athan/controllers/athan_controller.dart';
 import 'middlewares/auth_middleware.dart';
 
 /// App pages configuration
@@ -138,6 +141,14 @@ abstract class AppPages {
         Get.lazyPut(() => MemorizationController());
       }),
     ),
+    GetPage(
+      name: AppRoutes.quiz,
+      page: () => const QuizView(),
+      binding: BindingsBuilder(() {
+        // reuse controller or put generic one
+        Get.lazyPut(() => MemorizationController());
+      }),
+    ),
 
     GetPage(
       name: '/bookmarks',
@@ -166,6 +177,13 @@ abstract class AppPages {
       page: () => const AllahNamesView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => AllahNamesController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.athan,
+      page: () => const AthanView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => AthanController());
       }),
     ),
   ];

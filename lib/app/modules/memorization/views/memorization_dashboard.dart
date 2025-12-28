@@ -85,14 +85,66 @@ class MemorizationDashboardView extends GetView<MemorizationController> {
               ),
             ),
             const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Navigate to details
-                },
-                child: Text('View Details'.tr),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  onPressed: () {
+                    // Start Quiz
+                    _showQuizOptions(context, plan);
+                  },
+                  icon: const Icon(Icons.quiz),
+                  label: Text('Take Quiz'.tr),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to details
+                  },
+                  child: Text('View Details'.tr),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showQuizOptions(BuildContext context, MemorizationPlan plan) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Select Quiz Type',
+              style: GoogleFonts.cairo(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.text_fields),
+              title: const Text('Complete the Verse'),
+              onTap: () {
+                Get.back();
+                controller.startQuiz(plan.id!, 'complete_verse');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help_outline),
+              title: const Text('Guess the Surah'),
+              onTap: () {
+                Get.back();
+                controller.startQuiz(plan.id!, 'guess_surah');
+              },
             ),
           ],
         ),

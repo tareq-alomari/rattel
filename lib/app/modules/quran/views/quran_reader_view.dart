@@ -83,6 +83,11 @@ class _QuranReaderViewState extends State<QuranReaderView> {
             ),
           ),
           IconButton(
+            icon: const Icon(Icons.mic),
+            tooltip: 'select_reciter'.tr,
+            onPressed: controller.showReciterSelector,
+          ),
+          IconButton(
             icon: const Icon(Icons.bookmark),
             onPressed: () {
               // Ensure controller is available before navigating

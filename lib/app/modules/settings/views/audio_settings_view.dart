@@ -41,7 +41,7 @@ class AudioSettingsView extends StatelessWidget {
                           : Colors.grey,
                     ),
                     title: Text(
-                      reciter.nameAr,
+                      reciter.arabicName,
                       style: GoogleFonts.cairo(
                         fontWeight: isSelected
                             ? FontWeight.bold
@@ -49,7 +49,7 @@ class AudioSettingsView extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      reciter.description ?? reciter.nameEn,
+                      reciter.name,
                       style: const TextStyle(fontSize: 12),
                     ),
                     trailing: isSelected
@@ -62,7 +62,7 @@ class AudioSettingsView extends StatelessWidget {
                       audioService.changeReciter(reciter.id);
                       Get.snackbar(
                         'تم التغيير',
-                        'تم اختيار القارئ: ${reciter.nameAr}',
+                        'تم اختيار القارئ: ${reciter.arabicName}',
                         duration: const Duration(seconds: 2),
                       );
                     },

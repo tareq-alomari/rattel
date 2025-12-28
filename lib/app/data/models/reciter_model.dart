@@ -1,35 +1,35 @@
 class Reciter {
   final String id;
-  final String nameAr;
-  final String nameEn;
-  final String folder;
-  final String? description;
+  final String name;
+  final String arabicName;
+  final String? r2Path;
+  final String? format;
 
   Reciter({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
-    required this.folder,
-    this.description,
+    required this.name,
+    required this.arabicName,
+    this.r2Path,
+    this.format,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'nameAr': nameAr,
-      'nameEn': nameEn,
-      'folder': folder,
-      'description': description,
+      'name': name,
+      'arabicName': arabicName,
+      'r2Path': r2Path,
+      'format': format,
     };
   }
 
   factory Reciter.fromMap(Map<String, dynamic> map) {
     return Reciter(
-      id: map['id'],
-      nameAr: map['nameAr'],
-      nameEn: map['nameEn'],
-      folder: map['folder'],
-      description: map['description'],
+      id: map['id'] ?? '',
+      name: map['name'] ?? '',
+      arabicName: map['arabicName'] ?? '',
+      r2Path: map['r2Path'],
+      format: map['format'],
     );
   }
 }

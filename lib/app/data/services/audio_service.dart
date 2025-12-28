@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart';
 import '../models/reciter_model.dart';
+import 'al_furqan_service.dart';
 
 class AudioService extends GetxService {
   static AudioService get to => Get.find();
@@ -17,7 +19,7 @@ class AudioService extends GetxService {
   // Advanced Features
   final RxDouble playbackSpeed = 1.0.obs;
   final Rx<RepeatMode> repeatMode = RepeatMode.none.obs;
-  final RxString currentReciterId = 'alafasy'.obs;
+  final RxString currentReciterId = 'mishary_rashid_alafasy'.obs;
 
   // Repeat range (for range mode)
   int? repeatRangeStart;
@@ -25,62 +27,21 @@ class AudioService extends GetxService {
   int? repeatRangeSurah;
 
   // Available Reciters
-  final List<Reciter> availableReciters = [
-    Reciter(
-      id: 'alafasy',
-      nameAr: 'مشاري بن راشد العفاسي',
-      nameEn: 'Mishary Rashid Alafasy',
-      folder: 'Alafasy_128kbps',
-      description: 'قراءة مرتلة واضحة',
-    ),
-    Reciter(
-      id: 'husary',
-      nameAr: 'محمود خليل الحصري',
-      nameEn: 'Mahmoud Khalil Al-Hussary',
-      folder: 'Husary_128kbps',
-      description: 'قراءة مجودة كلاسيكية',
-    ),
-    Reciter(
-      id: 'minshawy',
-      nameAr: 'محمد صديق المنشاوي',
-      nameEn: 'Mohamed Siddiq Al-Minshawi',
-      folder: 'Minshawy_Murattal_128kbps',
-      description: 'قراءة مرتلة عذبة',
-    ),
-    Reciter(
-      id: 'sudais',
-      nameAr: 'عبدالرحمن السديس',
-      nameEn: 'Abdurrahman As-Sudais',
-      folder: 'Abdurrahmaan_As-Sudais_192kbps',
-      description: 'إمام الحرم المكي',
-    ),
-    Reciter(
-      id: 'shuraim',
-      nameAr: 'سعود الشريم',
-      nameEn: 'Saood Ash-Shuraim',
-      folder: 'Saood_ash-Shuraym_128kbps',
-      description: 'إمام الحرم المكي',
-    ),
-    Reciter(
-      id: 'ajmi',
-      nameAr: 'أحمد بن علي العجمي',
-      nameEn: 'Ahmad Al-Ajmi',
-      folder: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net',
-      description: 'قراءة مؤثرة',
-    ),
-    Reciter(
-      id: 'ghamadi',
-      nameAr: 'سعد الغامدي',
-      nameEn: 'Saad Al-Ghamdi',
-      folder: 'Ghamadi_40kbps',
-      description: 'قراءة هادئة',
-    ),
-  ];
+  // Available Reciters (Loaded from API)
+  final RxList<Reciter> availableReciters = <Reciter>[].obs;
+
+  // Default Reciter (Mishary)
+  final Reciter _defaultReciter = Reciter(
+    id: 'mishary_rashid_alafasy',
+    name: 'Mishary Rashid Alafasy',
+    arabicName: 'مشاري راشد العفاسي',
+  );
 
   @override
   void onInit() {
     super.onInit();
     _initAudioSession();
+    _loadReciters();
 
     // Listen to player state
     _player.playerStateStream.listen((state) {
@@ -99,6 +60,23 @@ class AudioService extends GetxService {
   // Event trigger for completion
   final Rxn<void> playbackCompleted = Rxn<void>();
 
+  Future<void> _loadReciters() async {
+    try {
+      // Ensure service is initialized
+      if (!Get.isRegistered<AlFurqanService>()) {
+        Get.put(AlFurqanService());
+      }
+
+      final reciters = await AlFurqanService.to.getReciters();
+      if (reciters.isNotEmpty) {
+        availableReciters.assignAll(reciters);
+      }
+    } catch (e) {
+      debugPrint('Error loading reciters: $e');
+      // Optionally show a snackbar or retry logic
+    }
+  }
+
   Future<void> _initAudioSession() async {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
@@ -108,7 +86,7 @@ class AudioService extends GetxService {
   Reciter get currentReciter {
     return availableReciters.firstWhere(
       (r) => r.id == currentReciterId.value,
-      orElse: () => availableReciters[0],
+      orElse: () => _defaultReciter,
     );
   }
 
@@ -187,15 +165,25 @@ class AudioService extends GetxService {
       // Stop current if playing
       await _player.stop();
 
-      // Format: http://everyayah.com/data/{Reciter}/{Surah3Digits}{Ayah3Digits}.mp3
-      final String surahStr = surah.toString().padLeft(3, '0');
-      final String ayahStr = ayah.toString().padLeft(3, '0');
-      final String url =
-          'http://everyayah.com/data/${currentReciter.folder}/$surahStr$ayahStr.mp3';
+      // Use AlFurqan API
+      if (!Get.isRegistered<AlFurqanService>()) {
+        Get.put(AlFurqanService());
+      }
 
-      await _player.setUrl(url);
-      await _player.setSpeed(playbackSpeed.value);
-      await _player.play();
+      final String url = AlFurqanService.to.getAudioUrl(
+        reciterId: currentReciterId.value,
+        surahNumber: surah,
+        ayahNumber: ayah,
+      );
+
+      debugPrint('Playing URL: $url');
+      try {
+        await _player.setUrl(url);
+        await _player.setSpeed(playbackSpeed.value);
+        await _player.play();
+      } catch (e) {
+        debugPrint('Error in setUrl or play: $e');
+      }
     } catch (e) {
       // Use logger instead of print in production
       Get.snackbar('خطأ', 'فشل تشغيل الصوت: $e');
@@ -214,6 +202,44 @@ class AudioService extends GetxService {
     await _player.stop();
     currentSurah.value = 0;
     currentAyah.value = 0;
+  }
+
+  /// Play audio from direct URL (for Athan, etc.)
+  Future<void> playUrl(String url) async {
+    try {
+      // Stop current if playing
+      await _player.stop();
+
+      debugPrint('Playing URL: $url');
+      await _player.setUrl(url);
+      await _player.play();
+    } catch (e) {
+      Get.snackbar('خطأ', 'فشل تشغيل الصوت: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> playAthan(String athanId) async {
+    try {
+      // Stop current if playing
+      await _player.stop();
+
+      // Use AlFurqan API to get list (since we don't have a direct "get athan url" method separately that takes ID only without fetching list,
+      // but actually the API endpoint for streaming is /athan/:id.
+      // The provider/repo should support getting that URL or we construct it.
+      // Looking at provider, we only have getAthans().
+      // The API says: GET /api/v1/athan/:id to stream.
+      // So the URL is https://alfurqan.online/api/v1/athan/$athanId
+
+      const baseUrl = 'https://alfurqan.online/api/v1';
+      final url = '$baseUrl/athan/$athanId';
+
+      debugPrint('Playing Athan URL: $url');
+      await _player.setUrl(url);
+      await _player.play();
+    } catch (e) {
+      Get.snackbar('خطأ', 'فشل تشغيل الآذان: $e');
+    }
   }
 
   @override

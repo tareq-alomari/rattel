@@ -6,12 +6,19 @@ import '../../../data/services/gamification_service.dart';
 
 class MemorizationController extends GetxController {
   final RxList<MemorizationPlan> activePlans = <MemorizationPlan>[].obs;
+  final RxList<QuizResult> recentQuizzes = <QuizResult>[].obs;
   final RxBool isLoading = true.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadPlans();
+    loadRecentQuizzes();
+  }
+
+  Future<void> loadRecentQuizzes() async {
+    // Placeholder for loading quizzes from DB
+    // recentQuizzes.value = await DatabaseHelper.instance.getRecentQuizzes();
   }
 
   Future<void> loadPlans() async {
@@ -67,6 +74,28 @@ class MemorizationController extends GetxController {
       Get.snackbar('Success', 'Progress recorded!');
     } catch (e) {
       Get.snackbar('Error', 'Failed to log progress: $e');
+    }
+  }
+
+  // Quiz Logic
+  void startQuiz(int planId, String type) {
+    // Navigate to Quiz View with generated questions
+    // For now, we'll generate dummy questions based on the plan's range
+    final plan = activePlans.firstWhere((p) => p.id == planId);
+
+    // Logic to generate questions would go here
+    // For MVP, passing dummy data
+    Get.toNamed('/memorization/quiz', arguments: {'plan': plan, 'type': type});
+  }
+
+  Future<void> saveQuizResult(QuizResult result) async {
+    try {
+      // await DatabaseHelper.instance.createQuizResult(result.toMap());
+      // recentQuizzes.add(result);
+      Get.back();
+      Get.snackbar('Success', 'Quiz completed! Score: ${result.score}%');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to save quiz: $e');
     }
   }
 }

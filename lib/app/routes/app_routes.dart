@@ -8,6 +8,7 @@ abstract class AppRoutes {
   static const quranReader = '/quran-reader';
   static const surahSelector = '/surah-selector';
   static const memorization = '/memorization';
+  static const quiz = '/memorization/quiz';
   static const search = '/search';
   static const settings = '/settings';
   static const teacherSettings = '/teacher-settings';
@@ -17,5 +18,6 @@ abstract class AppRoutes {
   static const studentBadges = '/student-badges';
   static const hadith = '/hadith';
   static const azkar = '/azkar';
+  static const athan = '/athan';
   static const allahNames = '/allah-names';
 }
