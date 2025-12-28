@@ -1,11 +1,13 @@
 import 'package:get/get.dart';
 import '../../../data/services/auth_service.dart';
+import '../../../data/services/firebase_auth_service.dart';
 import '../../../data/models/user_model.dart';
 import '../../../routes/app_routes.dart';
 
 /// Auth controller for login/register
 class AuthController extends GetxController {
   final AuthService _authService = AuthService.instance;
+  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
 
   final Rx<UserModel?> currentUser = Rx<UserModel?>(null);
   final RxBool isLoading = false.obs;
@@ -18,20 +20,32 @@ class AuthController extends GetxController {
   }
 
   /// Login user
-  Future<void> login(String email, String password) async {
+  Future<void> login(
+    String email,
+    String password, {
+    bool useFirebase = true,
+  }) async {
     try {
       isLoading.value = true;
-      final user = await _authService.login(email: email, password: password);
-      currentUser.value = user;
+      UserModel? user;
 
-      // Navigate based on role
-      if (user?.isStudent == true) {
-        Get.offAllNamed(AppRoutes.studentHome);
+      if (useFirebase) {
+        user = await _firebaseAuthService.signInWithEmail(email, password);
       } else {
-        Get.offAllNamed(AppRoutes.teacherHome);
+        user = await _authService.login(email: email, password: password);
       }
 
-      Get.snackbar('login_success'.tr, 'welcome'.tr);
+      currentUser.value = user;
+
+      if (user != null) {
+        // Navigate based on role
+        if (user.isStudent == true) {
+          Get.offAllNamed(AppRoutes.studentHome);
+        } else {
+          Get.offAllNamed(AppRoutes.teacherHome);
+        }
+        Get.snackbar('login_success'.tr, 'welcome'.tr);
+      }
     } catch (e) {
       Get.snackbar('error'.tr, 'invalid_credentials'.tr);
     } finally {
@@ -40,25 +54,43 @@ class AuthController extends GetxController {
   }
 
   /// Register new user
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(
+    String name,
+    String email,
+    String password, {
+    bool useFirebase = true,
+  }) async {
     try {
       isLoading.value = true;
-      final user = await _authService.register(
-        name: name,
-        email: email,
-        password: password,
-        role: selectedRole.value,
-      );
-      currentUser.value = user;
+      UserModel? user;
 
-      // Navigate based on role
-      if (user?.isStudent == true) {
-        Get.offAllNamed(AppRoutes.studentHome);
+      if (useFirebase) {
+        user = await _firebaseAuthService.signUpWithEmail(
+          email,
+          password,
+          name,
+          selectedRole.value,
+        );
       } else {
-        Get.offAllNamed(AppRoutes.teacherHome);
+        user = await _authService.register(
+          name: name,
+          email: email,
+          password: password,
+          role: selectedRole.value,
+        );
       }
 
-      Get.snackbar('register_success'.tr, 'welcome'.tr);
+      currentUser.value = user;
+
+      if (user != null) {
+        // Navigate based on role
+        if (user.isStudent == true) {
+          Get.offAllNamed(AppRoutes.studentHome);
+        } else {
+          Get.offAllNamed(AppRoutes.teacherHome);
+        }
+        Get.snackbar('register_success'.tr, 'welcome'.tr);
+      }
     } catch (e) {
       if (e.toString().contains('email_already_exists')) {
         Get.snackbar('error'.tr, 'email_already_exists'.tr);
@@ -70,9 +102,32 @@ class AuthController extends GetxController {
     }
   }
 
+  /// Login with Google
+  Future<void> loginWithGoogle() async {
+    try {
+      isLoading.value = true;
+      final user = await _firebaseAuthService.signInWithGoogle();
+      currentUser.value = user;
+
+      if (user != null) {
+        if (user.isStudent == true) {
+          Get.offAllNamed(AppRoutes.studentHome);
+        } else {
+          Get.offAllNamed(AppRoutes.teacherHome);
+        }
+        Get.snackbar('login_success'.tr, 'welcome'.tr);
+      }
+    } catch (e) {
+      Get.snackbar('error'.tr, e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   /// Logout user
   Future<void> logout() async {
     await _authService.logout();
+    await _firebaseAuthService.signOut();
     currentUser.value = null;
     Get.offAllNamed(AppRoutes.login);
   }

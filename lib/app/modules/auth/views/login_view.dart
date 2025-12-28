@@ -85,6 +85,39 @@ class LoginView extends GetView<AuthController> {
               ),
               const SizedBox(height: 24),
 
+              // Divider
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'or'.tr,
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Google Login
+              OutlinedButton.icon(
+                onPressed: () => controller.loginWithGoogle(),
+                icon: Image.network(
+                  'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
+                  height: 24,
+                  // Note: In real app, use a local asset or a better SVG loader
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.login),
+                ),
+                label: Text('login_with_google'.tr),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+              const SizedBox(height: 24),
+
               // Register link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

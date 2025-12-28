@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:rattel/app/data/services/user_data_service.dart';
+import 'package:rattel/app/data/services/auth_service.dart';
 
 /// Notification service for daily reminders
 class NotificationService extends GetxService {
@@ -23,6 +26,11 @@ class NotificationService extends GetxService {
     _isSupported = true;
     tz.initializeTimeZones();
 
+    // Initialize Firebase Messaging
+    await _messaging.requestPermission(alert: true, badge: true, sound: true);
+    // Retrieval of token
+    await _saveFcmToken();
+
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -39,6 +47,28 @@ class NotificationService extends GetxService {
 
     await _notifications.initialize(initSettings);
     return this;
+  }
+
+  // Firebase Messaging instance
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
+  // Save FCM token to Firestore
+  Future<void> _saveFcmToken() async {
+    try {
+      final token = await _messaging.getToken();
+      if (token != null) {
+        final user = AuthService.instance.currentUser;
+        if (user != null && user.userId != null) {
+          // Note: using user.userId.toString() as document ID for Firebase if needed,
+          // or just link it to the email.
+          await UserDataService().setUserData(user.userId.toString(), {
+            'fcmToken': token,
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Failed to save FCM token: $e');
+    }
   }
 
   /// Schedule daily reminder

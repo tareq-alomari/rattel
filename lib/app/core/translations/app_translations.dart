@@ -36,6 +36,8 @@ class AppTranslations extends Translations {
     'register_success': 'تم إنشاء الحساب بنجاح',
     'invalid_credentials': 'بيانات الدخول غير صحيحة',
     'email_already_exists': 'البريد الإلكتروني مستخدم مسبقاً',
+    'or': 'أو',
+    'login_with_google': 'تسجيل الدخول باستخدام Google',
 
     // Quran
     'quran': 'القرآن الكريم',
@@ -308,6 +310,8 @@ class AppTranslations extends Translations {
     'register_success': 'Registration successful',
     'invalid_credentials': 'Invalid credentials',
     'email_already_exists': 'Email already exists',
+    'or': 'OR',
+    'login_with_google': 'Sign in with Google',
 
     // Quran
     'quran': 'Holy Quran',
